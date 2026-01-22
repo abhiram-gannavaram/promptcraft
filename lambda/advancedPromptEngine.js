@@ -367,12 +367,16 @@ const AdvancedPromptEngine = {
         };
         
         // Construct the enhanced prompt
-        return `Write a compelling, original short story (approximately ${wordCount} words) featuring a ${mainChar.name} as a central character.
+        // Fix grammar: "a" vs "an" for vowel sounds
+        const article = ['a', 'e', 'i', 'o', 'u'].includes(mainChar.name.charAt(0).toLowerCase()) ? 'an' : 'a';
+        const charDisplayName = mainChar.name === 'ai' ? 'AI' : mainChar.name;
+        
+        return `Write a compelling, original short story (approximately ${wordCount} words) featuring ${article} ${charDisplayName} as a central character.
 
 **CHARACTER REQUIREMENTS:**
 ${charSpec}
 ${roleSpec}
-Primary motivation or internal conflict: Define what the ${mainChar.name} wants vs. what it needs - create psychological depth through this tension.
+Primary motivation or internal conflict: Define what the ${charDisplayName} wants vs. what it needs - create psychological depth through this tension.
 Attributes to embody: ${mainChar.attributes.join(', ')}
 ${settingDesc}
 ${actionFocus}
@@ -387,7 +391,7 @@ ${themeRequirements}
 • **Resolution**: Provide emotional closure that resonates with your chosen theme (avoid neat, clichéd endings)
 
 **CRAFT REQUIREMENTS:**
-• **POV**: Write from the ${mainChar.name}'s perspective using ${genre === 'literary fiction' ? 'close third-person or first-person' : 'the most effective viewpoint for your story'}
+• **POV**: Write from the ${charDisplayName}'s perspective using ${genre === 'literary fiction' ? 'close third-person or first-person' : 'the most effective viewpoint for your story'}
 • **Sensory Detail**: Include vivid descriptions engaging at least 3 senses in each scene
 • **Dialogue**: If present, dialogue must reveal character and advance plot simultaneously
 • **Pacing**: Vary sentence length - short during tension, longer during reflection

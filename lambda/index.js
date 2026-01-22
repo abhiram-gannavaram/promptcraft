@@ -46,12 +46,20 @@ function detectIntent(prompt) {
     }
     
     // App/Mobile development
-    if (lower.match(/\b(build|create|make|develop).*(app|application|mobile|android|ios)\b/)) {
-        const platform = lower.includes('android') ? 'Android' : lower.includes('ios') ? 'iOS' : 'Mobile';
+    if (lower.match(/\b(build|create|make|develop).*(app|application|mobile|android|ios|iphone|ipad)\b/)) {
+        let platform = 'Mobile';
+        if (lower.includes('android')) platform = 'Android';
+        else if (lower.includes('ios') || lower.includes('iphone') || lower.includes('ipad') || lower.includes('swift')) platform = 'iOS';
+        
         const features = [];
         if (lower.match(/\b(talk|speak|voice|tts)\b/)) features.push('text-to-speech');
         if (lower.match(/\b(mic|microphone|record|listen)\b/)) features.push('microphone input');
         if (lower.match(/\b(ai|chatbot|gpt)\b/)) features.push('AI integration');
+        if (lower.match(/\b(camera|photo|picture)\b/)) features.push('camera access');
+        if (lower.match(/\b(location|gps|map)\b/)) features.push('location services');
+        if (lower.match(/\b(notification|push|alert)\b/)) features.push('push notifications');
+        if (lower.match(/\b(payment|pay|stripe|checkout)\b/)) features.push('payment integration');
+        if (lower.match(/\b(social|share|facebook|twitter)\b/)) features.push('social sharing');
         
         const description = prompt.replace(/^(build|create|make|develop)\s+(me\s+)?(an?\s+)?/i, '').trim();
         return { type: 'app_development', description, platform, features };
