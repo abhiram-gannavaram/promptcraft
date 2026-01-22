@@ -400,12 +400,10 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
     }
 
     /**
-     * Call the prompt enhancement API via local proxy (Perplexity)
+     * Call the prompt enhancement API (AWS Lambda)
      */
     async function callPromptAPI(inputText, options) {
-        const systemPrompt = buildSystemPrompt(options);
-        
-        // Use local proxy server to call Perplexity API (avoids CORS issues)
+        // Call AWS Lambda API directly
         try {
             const response = await fetch(CONFIG.API_ENDPOINT, {
                 method: 'POST',
@@ -413,38 +411,29 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: 'sonar',
-                    messages: [
-                        {
-                            role: 'system',
-                            content: systemPrompt
-                        },
-                        {
-                            role: 'user',
-                            content: `Please enhance this prompt to make it more effective:\n\n${inputText}`
-                        }
-                    ],
-                    max_tokens: 2048,
-                    temperature: 0.7,
-                    top_p: 0.9
+                    prompt: inputText,
+                    options: {
+                        tone: options.tone || 'professional',
+                        length: options.length || 'balanced'
+                    }
                 })
             });
             
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 console.error('API error:', response.status, errorData);
-                throw new Error(errorData.error?.message || `API error: ${response.status}`);
+                throw new Error(errorData.error?.message || errorData.message || `API error: ${response.status}`);
             }
             
             const data = await response.json();
             console.log('API response:', data);
-            return data.choices?.[0]?.message?.content || data.content || 'No response generated';
+            
+            // Return the enhanced prompt from Lambda response
+            return data.enhancedPrompt || data.enhanced_prompt || 'No response generated';
             
         } catch (fetchError) {
             console.error('API call failed:', fetchError);
-            // If API fails, show a demo response for testing
-            console.warn('Using demo mode due to API error');
-            return generateDemoResponse(inputText, options);
+            throw fetchError; // Don't use demo mode - show the actual error
         }
     }
 
