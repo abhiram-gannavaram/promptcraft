@@ -840,6 +840,110 @@ Format: Vision | Key Challenges | Long-term Potential
 • Constraint removal`;
     },
 
+    // Image generation and editing prompts
+    image_generation: (description) => {
+        // Extract key elements from the description
+        const lower = description.toLowerCase();
+        
+        // Determine if it's editing an existing image or creating new
+        const isEditing = lower.includes('convert') || lower.includes('transform') || lower.includes('edit') || lower.includes('modify');
+        
+        // Extract subject/style information
+        let subject = description;
+        let style = '';
+        let details = [];
+        
+        // Common styles and subjects
+        const styles = ['photorealistic', 'realistic', 'cartoon', 'anime', 'digital art', 'oil painting', 'watercolor', 'sketch', '3d render', 'minimalist', 'vintage', 'modern', 'abstract'];
+        const subjects = ['person', 'portrait', 'landscape', 'animal', 'building', 'object', 'scene', 'character'];
+        
+        // Extract style
+        for (const s of styles) {
+            if (lower.includes(s)) {
+                style = s;
+                subject = subject.replace(new RegExp(`\\b${s}\\b`, 'gi'), '').trim();
+                break;
+            }
+        }
+        
+        // Extract specific details
+        if (lower.includes('remove') || lower.includes('without') || lower.includes('no ')) {
+            details.push('negative prompting');
+        }
+        if (lower.includes('like') || lower.includes('as') || lower.includes('resembling')) {
+            details.push('style reference');
+        }
+        if (lower.includes('king') || lower.includes('queen') || lower.includes('ruler') || lower.includes('royal')) {
+            details.push('royal/regal composition');
+        }
+        
+        let prompt = '';
+        
+        if (isEditing) {
+            prompt = `Create a highly detailed image editing prompt for AI image generation tools:
+
+**ORIGINAL IMAGE TRANSFORMATION REQUEST:**
+${description}
+
+**ENHANCED AI IMAGE PROMPT:**
+
+A professional-quality image transformation featuring:`;
+        } else {
+            prompt = `Create a highly detailed image generation prompt for AI art tools:
+
+**IMAGE CONCEPT:**
+${description}
+
+**ENHANCED AI IMAGE PROMPT:**
+
+A stunning, professional-quality image featuring:`;
+        }
+        
+        // Add subject details
+        if (style) {
+            prompt += `\n• Subject: ${subject} in ${style} style`;
+        } else {
+            prompt += `\n• Subject: ${subject}`;
+        }
+        
+        prompt += `\n• Composition: Dynamic and visually striking arrangement`;
+        prompt += `\n• Lighting: Professional studio lighting with dramatic shadows`;
+        prompt += `\n• Quality: Ultra-high resolution, photorealistic details, sharp focus`;
+        prompt += `\n• Color palette: Rich and vibrant colors with excellent contrast`;
+        prompt += `\n• Technical specs: 8K resolution, professional photography quality`;
+        
+        if (details.includes('negative prompting')) {
+            prompt += `\n• Negative prompts: blurry, low quality, distorted, ugly, deformed, extra limbs, poor anatomy`;
+        }
+        
+        if (details.includes('style reference')) {
+            prompt += `\n• Style consistency: Maintain exact style reference throughout the image`;
+        }
+        
+        if (details.includes('royal/regal composition')) {
+            prompt += `\n• Royal elements: Crown, throne, regal attire, noble bearing, imperial setting`;
+        }
+        
+        prompt += `
+
+**ARTISTIC DIRECTIONS:**
+• Ensure anatomical accuracy and natural proportions
+• Use advanced rendering techniques for realistic textures
+• Apply professional color grading and post-processing
+• Create depth and dimension with proper perspective
+• Include subtle details that enhance the overall composition
+
+**TECHNICAL PARAMETERS:**
+• Aspect ratio: 16:9 (landscape) or 9:16 (portrait) based on subject
+• Style strength: High (for consistent aesthetic)
+• Quality settings: Maximum detail, no artifacts
+• Output format: High-resolution image suitable for professional use
+
+Use this prompt with AI image generation tools like Midjourney, DALL-E, or Stable Diffusion for best results.`;
+        
+        return prompt;
+    },
+
     // General fallback
     general: (prompt) => {
         return `Provide a comprehensive, expert-level response to: ${prompt}

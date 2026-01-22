@@ -71,6 +71,7 @@
         elements.copyBtn = document.getElementById('copy-btn');
         elements.downloadBtn = document.getElementById('download-btn');
         elements.shareBtn = document.getElementById('share-btn');
+        elements.clearBtn = document.getElementById('clear-btn');
         elements.copyToast = document.getElementById('copy-toast');
         elements.themeToggle = document.getElementById('theme-toggle');
         elements.languageSelect = document.getElementById('language-select');
@@ -695,6 +696,34 @@ Please organize your response with clear headings and bullet points where approp
         }
     }
 
+    function clearPrompt() {
+        // Clear the input field
+        if (elements.promptInput) {
+            elements.promptInput.value = '';
+            elements.promptInput.focus();
+        }
+        
+        // Reset character counter
+        if (elements.charCount) {
+            elements.charCount.textContent = '0';
+        }
+        
+        // Reset output to placeholder
+        resetOutput();
+        
+        // Reset state
+        state.generatedPrompt = '';
+        state.isGenerating = false;
+        
+        // Disable action buttons
+        if (elements.copyBtn) elements.copyBtn.disabled = true;
+        if (elements.downloadBtn) elements.downloadBtn.disabled = true;
+        if (elements.shareBtn) elements.shareBtn.disabled = true;
+        
+        // Track the clear action
+        trackEvent('prompt_clear');
+    }
+
     // =========================================
     // Analytics
     // =========================================
@@ -750,6 +779,9 @@ Please organize your response with clear headings and bullet points where approp
         
         // Share button
         elements.shareBtn?.addEventListener('click', sharePrompt);
+        
+        // Clear button
+        elements.clearBtn?.addEventListener('click', clearPrompt);
         
         // Theme toggle
         elements.themeToggle?.addEventListener('click', toggleTheme);

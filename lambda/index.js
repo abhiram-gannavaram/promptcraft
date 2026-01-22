@@ -100,6 +100,13 @@ function detectIntent(prompt) {
         return { type: 'brainstorming', challenge };
     }
     
+    // Image generation/editing
+    if (lower.match(/\b(convert|transform|edit|modify|generate|create).*(image|picture|photo|artwork|illustration)\b/) ||
+        lower.match(/\b(image|picture|photo|artwork|illustration).*(convert|transform|edit|modify|generate|create)\b/)) {
+        const description = prompt.replace(/^(convert|transform|edit|modify|generate|create)\s+(this\s+)?/i, '').trim();
+        return { type: 'image_generation', description };
+    }
+    
     return { type: 'general', prompt };
 }
 
@@ -143,6 +150,9 @@ function generateEnhancedPrompt(originalPrompt, options = {}) {
             
         case 'brainstorming':
             return AdvancedPromptEngine.brainstorming(intent.challenge || corrected);
+            
+        case 'image_generation':
+            return AdvancedPromptEngine.image_generation(intent.description || corrected);
             
         default:
             return AdvancedPromptEngine.general(corrected);
