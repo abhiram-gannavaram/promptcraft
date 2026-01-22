@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - PromptCraft AI</title>
+    <meta name="description" content="Get in touch with PromptCraft AI team. Submit questions, feature requests, or report issues.">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        .contact-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .contact-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .contact-options {
+            display: grid;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .contact-card {
+            background: var(--color-bg-secondary);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            transition: all 0.3s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+        .contact-card h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: var(--color-primary);
+        }
+        .contact-card .icon {
+            font-size: 1.5rem;
+        }
+        .contact-card p {
+            color: var(--color-text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .contact-card .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+        }
+        .contact-card .btn:hover {
+            background: var(--color-primary-dark);
+            transform: translateX(4px);
+        }
+        .faq-section {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+        .faq-item {
+            margin-bottom: 2rem;
+        }
+        .faq-item h3 {
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .faq-item p {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">🚀</span>
+                    <span>PromptCraft AI</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="contact-container">
+        <div class="contact-header">
+            <h1>Get in Touch</h1>
+            <p>Have questions, suggestions, or found a bug? We'd love to hear from you!</p>
+        </div>
+
+        <div class="contact-options">
+            <!-- GitHub Issues -->
+            <div class="contact-card">
+                <h2>
+                    <span class="icon">🐛</span>
+                    Report Issues or Suggest Features
+                </h2>
+                <p>
+                    Found a bug or have an idea for a new feature? Submit it on GitHub Issues. 
+                    This is the fastest way to get your concerns addressed.
+                </p>
+                <a href="https://github.com/abhiram-gannavaram/promptcraft/issues/new" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="btn">
+                    Open GitHub Issue →
+                </a>
+            </div>
+
+            <!-- GitHub Discussions -->
+            <div class="contact-card">
+                <h2>
+                    <span class="icon">💬</span>
+                    Ask Questions
+                </h2>
+                <p>
+                    Have general questions or want to discuss PromptCraft with the community? 
+                    Start a discussion on GitHub.
+                </p>
+                <a href="https://github.com/abhiram-gannavaram/promptcraft/discussions" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="btn">
+                    Start Discussion →
+                </a>
+            </div>
+
+            <!-- Star on GitHub -->
+            <div class="contact-card">
+                <h2>
+                    <span class="icon">⭐</span>
+                    Star on GitHub
+                </h2>
+                <p>
+                    Love PromptCraft? Give us a star on GitHub to show your support and 
+                    help others discover this tool!
+                </p>
+                <a href="https://github.com/abhiram-gannavaram/promptcraft" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="btn">
+                    Star Repository →
+                </a>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Common Questions</h2>
+            
+            <div class="faq-item">
+                <h3>📊 How do you handle my data?</h3>
+                <p>We store prompts temporarily for analytics (90 days auto-delete). No personal information is collected. Read our <a href="legal/privacy-policy.html">Privacy Policy</a> for details.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>💰 Is PromptCraft really free?</h3>
+                <p>Yes! 100% free, no sign-up required, no hidden fees, no ads. It's open-source and will always remain free.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>🔒 Is my prompt data secure?</h3>
+                <p>Yes. All data is encrypted in transit (HTTPS) and at rest (DynamoDB encryption). We don't share data with third parties.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>⚡ What's the rate limit?</h3>
+                <p>Currently 20 requests per minute per IP. This is to prevent abuse while keeping the service free for everyone.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>🚀 Can I contribute to the project?</h3>
+                <p>Absolutely! PromptCraft is open-source. Check out our <a href="https://github.com/abhiram-gannavaram/promptcraft" target="_blank" rel="noopener">GitHub repository</a> to contribute.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 PromptCraft AI. All rights reserved.</p>
+                <p>
+                    <a href="legal/privacy-policy.html">Privacy</a> | 
+                    <a href="legal/terms-of-service.html">Terms</a> | 
+                    <a href="contact.html">Contact</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
