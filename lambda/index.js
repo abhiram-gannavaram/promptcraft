@@ -131,17 +131,25 @@ function extractKeyTopics(prompt) {
     const topics = [];
     const lowerPrompt = prompt.toLowerCase();
     
+    // Platforms
     if (lowerPrompt.includes('android')) topics.push('Android development');
     if (lowerPrompt.includes('ios') || lowerPrompt.includes('iphone')) topics.push('iOS development');
     if (lowerPrompt.includes('react native')) topics.push('React Native');
     if (lowerPrompt.includes('flutter')) topics.push('Flutter');
-    if (lowerPrompt.includes('news')) topics.push('news aggregation/RSS feeds');
-    if (lowerPrompt.includes('ai') || lowerPrompt.includes('artificial intelligence')) topics.push('AI/ML integration');
-    if (lowerPrompt.includes('api')) topics.push('API integration');
-    if (lowerPrompt.includes('database')) topics.push('database design');
-    if (lowerPrompt.includes('authentication') || lowerPrompt.includes('login')) topics.push('user authentication');
-    if (lowerPrompt.includes('notification') || lowerPrompt.includes('push')) topics.push('push notifications');
-    if (lowerPrompt.includes('real-time') || lowerPrompt.includes('realtime') || lowerPrompt.includes('latest')) topics.push('real-time updates');
+    
+    // Features
+    if (lowerPrompt.match(/\b(talk|speak|voice|speech|tts|text.to.speech)\b/)) topics.push('text-to-speech');
+    if (lowerPrompt.match(/\b(mic|microphone|record|audio|listen)\b/)) topics.push('microphone input');
+    if (lowerPrompt.match(/\b(news|rss|feed)\b/)) topics.push('news aggregation/RSS feeds');
+    if (lowerPrompt.match(/\b(ai|ml|artificial intelligence|machine learning|chatbot|gpt)\b/)) topics.push('AI/ML integration');
+    if (lowerPrompt.match(/\b(api|rest|endpoint)\b/)) topics.push('API integration');
+    if (lowerPrompt.match(/\b(database|db|sql|sqlite|realm)\b/)) topics.push('database design');
+    if (lowerPrompt.match(/\b(auth|login|signup|authentication|oauth)\b/)) topics.push('user authentication');
+    if (lowerPrompt.match(/\b(notification|push|alert)\b/)) topics.push('push notifications');
+    if (lowerPrompt.match(/\b(real.?time|live|websocket|socket)\b/)) topics.push('real-time updates');
+    if (lowerPrompt.match(/\b(camera|photo|image|gallery)\b/)) topics.push('camera/image handling');
+    if (lowerPrompt.match(/\b(location|gps|map|geolocation)\b/)) topics.push('location services');
+    if (lowerPrompt.match(/\b(payment|stripe|paypal|checkout)\b/)) topics.push('payment integration');
     
     return topics;
 }
@@ -181,36 +189,353 @@ Ensure the narrative maintains consistent pacing, shows rather than tells, and l
 }
 
 function generateAppDevelopmentPrompt(correctedPrompt, topics, tone, length) {
-    const topicsStr = topics.length > 0 ? ` focusing on ${topics.join(', ')}` : '';
-    const detail = length === 'concise' ? 'Provide a brief technical overview.' : 
-                   length === 'detailed' ? 'Include detailed code examples and architecture decisions.' : 
-                   'Provide clear explanations with key code examples.';
+    // Extract app type/purpose
+    const appType = correctedPrompt.replace(/^(build|create|make|develop)\s+(me\s+)?(an?\s+)?/i, '').replace(/\s+(app|application).*$/i, '').trim();
     
-    return `Create a mobile app development plan for: ${correctedPrompt}${topicsStr}
+    // Determine platform
+    const isAndroid = correctedPrompt.toLowerCase().includes('android');
+    const isIOS = correctedPrompt.toLowerCase().includes('ios');
+    const platform = isAndroid ? 'Android' : isIOS ? 'iOS' : 'cross-platform';
+    const language = isAndroid ? 'Kotlin' : isIOS ? 'Swift' : 'React Native/Flutter';
+    const ide = isAndroid ? 'Android Studio' : isIOS ? 'Xcode' : 'VS Code';
+    
+    // Determine if full code or architecture is needed
+    const fullCode = length === 'detailed' || correctedPrompt.toLowerCase().includes('full code') || correctedPrompt.toLowerCase().includes('complete code');
+    
+    if (fullCode) {
+        return `Build a ${platform} app: ${appType}
 
-${detail}
+Provide a complete, production-ready implementation including:
 
-Include:
-- Recommended tech stack (framework, backend, database)
-- Core features for MVP
-- Key implementation steps
-- Code examples for critical functionality`;
+**1. Project Setup**
+- Target SDK versions and Gradle dependencies
+- Required permissions in AndroidManifest.xml (or Info.plist for iOS)
+- Project structure and package organization
+
+**2. Complete Code Files**
+- MainActivity.${isAndroid ? 'kt' : 'swift'} with full implementation
+- UI layout files (XML/SwiftUI)
+- ViewModel/Controller classes
+- Utility/Helper classes
+
+**3. Core Features Implementation**
+${topics.includes('AI/ML integration') ? '- AI/ML model integration with code examples' : ''}
+${topics.includes('real-time updates') ? '- Real-time data synchronization (WebSockets/Firebase)' : ''}
+${topics.includes('user authentication') ? '- Authentication flow (Firebase Auth/OAuth)' : ''}
+${topics.includes('API integration') ? '- REST API calls with Retrofit/Alamofire' : ''}
+- UI components and user interactions
+- Data persistence (Room/SQLite/CoreData)
+- Background tasks and lifecycle management
+
+**4. Step-by-Step Setup**
+1. Create new ${platform} project in ${ide}
+2. Add dependencies to build.gradle${isAndroid ? '' : ' (or Podfile)'}
+3. Configure permissions and app settings
+4. Implement core functionality
+5. Test on emulator/device
+
+**5. Code Snippets with Explanations**
+Include working code for:
+- Main activity/view controller
+- Key feature implementation
+- API/data handling
+- UI components
+
+**Format:** Provide copy-paste ready code with inline comments explaining logic.`;
+    } else {
+        return `Build a ${platform} app: ${appType}
+
+**Architecture & Implementation Guide**
+
+**1. Technology Stack**
+- **Language:** ${language}
+- **IDE:** ${ide}
+- **Framework:** ${platform === 'Android' ? 'Jetpack Compose (modern) or XML layouts' : platform === 'iOS' ? 'SwiftUI or UIKit' : 'React Native/Flutter'}
+- **Backend:** ${topics.includes('API integration') ? 'REST API + Firebase/Supabase' : 'Firebase (BaaS) or local SQLite'}
+- **Libraries:**
+  ${isAndroid ? `- Retrofit (networking)
+  - Room (database)
+  - Coroutines (async)
+  - ViewModel + LiveData (MVVM)` : isIOS ? `- Alamofire (networking)
+  - CoreData (database)
+  - Combine (reactive)` : `- Axios (networking)
+  - AsyncStorage
+  - Redux/MobX`}
+
+**2. App Architecture**
+\`\`\`
+UI Layer (Views/Activities)
+    ↓
+ViewModel/Presenter Layer
+    ↓
+Repository Layer (Data Access)
+    ↓
+Data Sources (API/Database)
+\`\`\`
+
+**3. Core Features for MVP**
+${appType ? `For a ${appType} app:` : ''}
+${topics.includes('AI/ML integration') ? '- AI model integration (TensorFlow Lite/CoreML)' : ''}
+${topics.includes('real-time updates') ? '- Real-time updates (WebSockets/Firebase Realtime Database)' : ''}
+${topics.includes('user authentication') ? '- User authentication (Firebase Auth)' : ''}
+${topics.includes('API integration') ? '- External API integration' : ''}
+- Core user interface
+- Data persistence
+- Background processing
+- Error handling
+
+**4. Key Implementation Steps**
+
+**Step 1: Project Setup**
+\`\`\`${isAndroid ? 'kotlin' : 'swift'}
+// ${isAndroid ? 'build.gradle (app level)' : 'Podfile'}
+${isAndroid ? `dependencies {
+    implementation "androidx.core:core-ktx:1.12.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0"
+    // Add specific dependencies based on features
+}` : `pod 'Alamofire'
+pod 'Firebase/Auth'`}
+\`\`\`
+
+**Step 2: Required Permissions**
+\`\`\`xml
+${isAndroid ? `<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />` : `<key>NSMicrophoneUsageDescription</key>
+<string>App needs microphone access</string>`}
+\`\`\`
+
+**Step 3: Main Activity/ViewController**
+\`\`\`${isAndroid ? 'kotlin' : 'swift'}
+${isAndroid ? `class MainActivity : AppCompatActivity() {
+    private lateinit var viewModel: MainViewModel
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Initialize UI and viewModel
+    }
+}` : `class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Setup UI
+    }
+}`}
+\`\`\`
+
+**Step 4: Critical Features Code**
+[Include 2-3 key code snippets for main features]
+
+**5. Testing & Deployment**
+- Test on emulator (AVD/iOS Simulator)
+- Test on physical device
+- Handle edge cases and errors
+- Prepare for ${platform === 'Android' ? 'Google Play' : platform === 'iOS' ? 'App Store' : 'both stores'}
+
+**Next Steps:**
+1. Set up ${ide} project
+2. Implement features incrementally
+3. Test thoroughly
+4. Optimize performance`;
+    }
 }
 
 function generateWebDevelopmentPrompt(correctedPrompt, topics, tone, length) {
-    const detail = length === 'concise' ? 'Provide essential steps only.' : 
-                   length === 'detailed' ? 'Include complete code examples and setup instructions.' : 
-                   'Provide clear guidance with code samples.';
+    const appType = correctedPrompt.replace(/^(build|create|make|develop)\s+(me\s+)?(an?\s+)?/i, '').replace(/\s+(website|web app|web application|site).*$/i, '').trim();
+    const fullCode = length === 'detailed' || correctedPrompt.toLowerCase().includes('full code');
     
-    return `Build a web application for: ${correctedPrompt}
+    if (fullCode) {
+        return `Build a complete web application: ${appType}
 
-${detail}
+**Full Implementation Required**
 
-Cover:
-- Tech stack recommendation (frontend/backend/database)
-- Project structure and key components
-- Implementation steps with code examples
-- Deployment approach`;
+**1. Project Structure**
+\`\`\`
+project/
+├── public/
+│   └── index.html
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   ├── utils/
+│   └── App.js
+├── package.json
+└── README.md
+\`\`\`
+
+**2. Technology Stack**
+- **Frontend:** React 18+ with Hooks or Next.js 14+
+- **Styling:** Tailwind CSS or styled-components
+- **State Management:** Context API or Zustand
+- **Backend:** ${topics.includes('API integration') ? 'Node.js + Express' : 'Firebase/Supabase (serverless)'}
+- **Database:** ${topics.includes('database design') ? 'PostgreSQL or MongoDB' : 'Firebase Firestore'}
+- **Hosting:** Vercel (frontend) + Railway/Render (backend)
+
+**3. Complete Code Files**
+
+**package.json:**
+\`\`\`json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    // Add relevant packages
+  }
+}
+\`\`\`
+
+**src/App.js:**
+\`\`\`javascript
+import React from 'react';
+// Full implementation with routing, state, API calls
+\`\`\`
+
+**Key Components:**
+[Provide 3-5 complete component files]
+
+**4. API/Backend Code**
+${topics.includes('API integration') ? '\`\`\`javascript\n// Express server setup\n// Route handlers\n// Database connections\n\`\`\`' : 'Firebase configuration and security rules'}
+
+**5. Step-by-Step Setup**
+\`\`\`bash
+npx create-react-app ${appType.replace(/\s+/g, '-')}
+cd ${appType.replace(/\s+/g, '-')}
+npm install [dependencies]
+npm start
+\`\`\`
+
+**6. Deployment Instructions**
+- Build: \`npm run build\`
+- Deploy to Vercel: \`vercel --prod\`
+- Environment variables setup
+- Domain configuration`;
+    } else {
+        return `Build a modern web application: ${appType}
+
+**Architecture & Technology Stack**
+
+**1. Recommended Stack**
+- **Frontend Framework:** React + Next.js 14 (for SSR/SEO) or Vite + React (for SPA)
+- **Styling:** Tailwind CSS (utility-first) or Material-UI (components)
+- **State Management:** 
+  - Simple apps: React Context API
+  - Complex apps: Zustand or Redux Toolkit
+- **Backend:** 
+  - Option A: Next.js API routes (serverless)
+  - Option B: Node.js + Express + PostgreSQL
+  - Option C: Firebase/Supabase (BaaS)
+- **Authentication:** NextAuth.js or Firebase Auth
+- **Deployment:** Vercel (frontend) + Railway (backend)
+
+**2. Project Architecture**
+\`\`\`
+Client (Next.js/React)
+    ↓ API calls
+API Layer (Next.js routes / Express)
+    ↓ queries
+Database (PostgreSQL / Firestore)
+\`\`\`
+
+**3. Core Features Implementation**
+
+${topics.includes('user authentication') ? `**User Authentication:**
+\`\`\`javascript
+// NextAuth.js setup
+import NextAuth from 'next-auth'
+import Providers from 'next-auth/providers'
+
+export default NextAuth({
+  providers: [
+    Providers.Google({...}),
+  ],
+  // callbacks, session config
+})
+\`\`\`
+` : ''}
+${topics.includes('API integration') ? `**API Integration:**
+\`\`\`javascript
+// services/api.js
+const fetchData = async () => {
+  const response = await fetch('/api/endpoint')
+  return response.json()
+}
+\`\`\`
+` : ''}
+${topics.includes('database design') ? `**Database Schema:**
+\`\`\`sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255),
+  created_at TIMESTAMP
+);
+\`\`\`
+` : ''}
+
+**4. Key Implementation Steps**
+
+**Step 1: Initialize Project**
+\`\`\`bash
+npx create-next-app@latest ${appType.replace(/\s+/g, '-')}
+cd ${appType.replace(/\s+/g, '-')}
+npm install [required-packages]
+\`\`\`
+
+**Step 2: Set Up Components**
+\`\`\`javascript
+// components/MainComponent.jsx
+export default function MainComponent() {
+  const [data, setData] = useState(null)
+  
+  useEffect(() => {
+    // Fetch data, handle state
+  }, [])
+  
+  return <div>{/* UI */}</div>
+}
+\`\`\`
+
+**Step 3: API Routes (Next.js)**
+\`\`\`javascript
+// pages/api/data.js
+export default async function handler(req, res) {
+  // Handle API logic
+  res.status(200).json({ data })
+}
+\`\`\`
+
+**Step 4: Styling**
+\`\`\`javascript
+// Use Tailwind classes or styled-components
+<div className="flex items-center justify-center min-h-screen">
+  {/* Content */}
+</div>
+\`\`\`
+
+**5. Performance Optimization**
+- Image optimization (Next.js Image component)
+- Code splitting and lazy loading
+- Server-side rendering for SEO
+- Caching strategies
+
+**6. SEO & Accessibility**
+- Meta tags and Open Graph
+- Semantic HTML
+- ARIA labels
+- Lighthouse score 90+
+
+**7. Deployment Checklist**
+- [ ] Environment variables configured
+- [ ] Build passes: \`npm run build\`
+- [ ] Deploy to Vercel: \`vercel --prod\`
+- [ ] Set up custom domain
+- [ ] Configure SSL/HTTPS
+- [ ] Set up analytics (Vercel Analytics/Google Analytics)
+
+**Next Steps:**
+1. Clone starter template or create from scratch
+2. Implement features incrementally
+3. Test on multiple browsers
+4. Deploy to staging → production`;
+    }
 }
 
 function generateDebuggingPrompt(correctedPrompt, tone, length) {
