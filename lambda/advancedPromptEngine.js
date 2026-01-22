@@ -839,6 +839,30 @@ Format: Vision | Key Challenges | Long-term Potential
 • Analogy from other industries
 • Constraint removal`;
     },
+    
+    // Poetry
+    poetry: (subject, length = 'balanced', tone = 'creative') => {
+        const cleanedSubject = subject && subject.trim().length > 0 ? subject.trim() : 'AI';
+        const lower = cleanedSubject.toLowerCase();
+        const displaySubject = lower === 'ai' ? 'AI' : cleanedSubject;
+        const lineGuidance = length === 'concise' ? '8-12 lines' : length === 'detailed' ? '20-30 lines' : '12-18 lines';
+        
+        let form = 'free verse';
+        if (lower.includes('haiku')) form = 'haiku (3 lines with a 5-7-5 syllable pattern)';
+        if (lower.includes('sonnet')) form = 'sonnet (14 lines with a clear rhyme scheme)';
+        if (lower.includes('limerick')) form = 'limerick (5 lines with a strong AABBA rhyme scheme)';
+        if (lower.includes('ghazal')) form = 'ghazal (couplets with a repeated refrain)';
+        
+        const sentences = [
+            `Write a ${tone} ${form} poem about ${displaySubject}.`,
+            `Use vivid imagery, metaphor, and sensory language to create an emotional arc from opening to ending.`,
+            `Keep the voice consistent and avoid headings, bullet points, or meta-commentary.`,
+            `Target ${lineGuidance} with natural line breaks and rhythmic flow.`,
+            `Include at least one striking image and one original metaphor, and deliver only the final poem.`
+        ];
+        
+        return sentences.join(' ');
+    },
 
     // Image generation and editing prompts
     image_generation: (description) => {

@@ -39,8 +39,16 @@ function detectIntent(prompt) {
         return { type: 'content_writing', topic };
     }
     
-    // Creative writing (fiction, stories, poems)
-    if (lower.match(/\b(story|stories|tale|narrative|fiction|novel|poem|poetry|screenplay)\b/)) {
+    // Poetry (handle before creative writing to avoid story prompts)
+    if (lower.match(/\b(poem|poetry)\b/)) {
+        const subject = prompt
+            .replace(/^(write|create|compose|generate)\s+(a\s+)?(poem|poetry)\s*(about|on)?\s*/i, '')
+            .trim();
+        return { type: 'poetry', subject };
+    }
+    
+    // Creative writing (fiction, stories)
+    if (lower.match(/\b(story|stories|tale|narrative|fiction|novel|screenplay)\b/)) {
         const subject = prompt.replace(/^(write|create|tell me).*?(story|tale|fiction|narrative).*?(about|on)\s+/i, '').trim();
         return { type: 'creative_writing', subject };
     }
@@ -110,6 +118,33 @@ function detectIntent(prompt) {
     return { type: 'general', prompt };
 }
 
+// Convert any structured prompt to a single paragraph
+function toSingleParagraph(text) {
+    if (!text || typeof text !== 'string') return '';
+
+    let cleaned = text;
+
+    // Remove code fences and inline backticks
+    cleaned = cleaned.replace(/```[\s\S]*?```/g, ' ');
+    cleaned = cleaned.replace(/`+/g, '');
+
+    // Remove markdown headings and bold markers
+    cleaned = cleaned.replace(/^\s*#{1,6}\s+/gm, '');
+    cleaned = cleaned.replace(/\*\*([^*]+)\*\*/g, '$1');
+
+    // Remove list markers and numbering
+    cleaned = cleaned.replace(/^\s*[-•]+\s+/gm, '');
+    cleaned = cleaned.replace(/^\s*\d+\.?\s+/gm, '');
+
+    // Remove extra separators
+    cleaned = cleaned.replace(/^\s*[-*_]{3,}\s*$/gm, '');
+
+    // Collapse whitespace into a single paragraph
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+    return cleaned;
+}
+
 // Generate Enhanced Prompt using Advanced Engine
 function generateEnhancedPrompt(originalPrompt, options = {}) {
     const corrected = fixSpelling(originalPrompt);
@@ -122,6 +157,9 @@ function generateEnhancedPrompt(originalPrompt, options = {}) {
         case 'creative_writing':
             // Use advanced NLP-like entity extraction
             return AdvancedPromptEngine.creative_writing(corrected, length);
+            
+        case 'poetry':
+            return AdvancedPromptEngine.poetry(intent.subject || corrected, length, tone);
             
         case 'app_development':
             return AdvancedPromptEngine.app_development(
@@ -256,7 +294,7 @@ exports.handler = async (event) => {
             };
         }
         
-        const enhancedPrompt = generateEnhancedPrompt(prompt, options);
+        const enhancedPrompt = toSingleParagraph(generateEnhancedPrompt(prompt, options));
         const intent = detectIntent(prompt);
         
         await savePrompt({

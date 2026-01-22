@@ -33,6 +33,7 @@
         STORAGE_THEME: 'prompt-generator-theme',
         STORAGE_LANGUAGE: 'prompt-generator-language',
         STORAGE_COOKIE_CONSENT: 'prompt-generator-cookies',
+        STORAGE_HISTORY: 'prompt-generator-history',
         
         // Analytics
         ANALYTICS_ENABLED: true
@@ -72,6 +73,9 @@
         elements.downloadBtn = document.getElementById('download-btn');
         elements.shareBtn = document.getElementById('share-btn');
         elements.clearBtn = document.getElementById('clear-btn');
+        elements.improveBtn = document.getElementById('improve-btn');
+        elements.promptHistory = document.getElementById('prompt-history');
+        elements.clearHistoryBtn = document.getElementById('clear-history-btn');
         elements.copyToast = document.getElementById('copy-toast');
         elements.themeToggle = document.getElementById('theme-toggle');
         elements.languageSelect = document.getElementById('language-select');
@@ -272,6 +276,83 @@
     }
 
     // =========================================
+    // Prompt History
+    // =========================================
+
+    function getHistory() {
+        try {
+            const raw = localStorage.getItem(CONFIG.STORAGE_HISTORY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+            console.warn('Failed to read history:', error);
+            return [];
+        }
+    }
+
+    function saveHistory(items) {
+        try {
+            localStorage.setItem(CONFIG.STORAGE_HISTORY, JSON.stringify(items));
+        } catch (error) {
+            console.warn('Failed to save history:', error);
+        }
+    }
+
+    function addToHistory(promptText) {
+        const text = promptText.trim();
+        if (!text) return;
+
+        const history = getHistory();
+        const filtered = history.filter(item => item !== text);
+        filtered.unshift(text);
+        const limited = filtered.slice(0, 10);
+        saveHistory(limited);
+        renderHistory();
+    }
+
+    function clearHistory() {
+        saveHistory([]);
+        renderHistory();
+        trackEvent('prompt_history_clear');
+    }
+
+    function renderHistory() {
+        if (!elements.promptHistory) return;
+
+        const history = getHistory();
+        elements.promptHistory.innerHTML = '';
+
+        if (history.length === 0) {
+            const empty = document.createElement('li');
+            empty.className = 'history-empty';
+            empty.textContent = 'No recent prompts yet.';
+            elements.promptHistory.appendChild(empty);
+            return;
+        }
+
+        history.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.className = 'history-item';
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'history-btn';
+            button.textContent = item.length > 120 ? `${item.slice(0, 120)}…` : item;
+            button.title = item;
+            button.addEventListener('click', () => {
+                if (elements.promptInput) {
+                    elements.promptInput.value = item;
+                    elements.promptInput.focus();
+                    updateCharCounter();
+                }
+            });
+
+            listItem.appendChild(button);
+            elements.promptHistory.appendChild(listItem);
+        });
+    }
+
+    // =========================================
     // Prompt Generation
     // =========================================
     
@@ -378,6 +459,7 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
             // Update state and UI
             state.generatedPrompt = enhancedPrompt;
             showOutput(enhancedPrompt);
+            addToHistory(inputText);
             
             // Track success
             trackEvent('prompt_generate_success', {
@@ -570,6 +652,7 @@ Please organize your response with clear headings and bullet points where approp
         if (elements.copyBtn) elements.copyBtn.disabled = false;
         if (elements.downloadBtn) elements.downloadBtn.disabled = false;
         if (elements.shareBtn) elements.shareBtn.disabled = false;
+        if (elements.improveBtn) elements.improveBtn.disabled = false;
     }
 
     function showError(message) {
@@ -604,6 +687,9 @@ Please organize your response with clear headings and bullet points where approp
         }
         if (elements.outputError) {
             elements.outputError.style.display = 'none';
+        }
+        if (elements.improveBtn) {
+            elements.improveBtn.disabled = true;
         }
     }
 
@@ -719,9 +805,21 @@ Please organize your response with clear headings and bullet points where approp
         if (elements.copyBtn) elements.copyBtn.disabled = true;
         if (elements.downloadBtn) elements.downloadBtn.disabled = true;
         if (elements.shareBtn) elements.shareBtn.disabled = true;
+        if (elements.improveBtn) elements.improveBtn.disabled = true;
         
         // Track the clear action
         trackEvent('prompt_clear');
+    }
+
+    function improveAgain() {
+        if (!state.generatedPrompt) return;
+        if (elements.promptInput) {
+            elements.promptInput.value = state.generatedPrompt;
+            elements.promptInput.focus();
+            updateCharCounter();
+        }
+        trackEvent('prompt_improve_again', { length: state.generatedPrompt.length });
+        generatePrompt();
     }
 
     // =========================================
@@ -783,6 +881,12 @@ Please organize your response with clear headings and bullet points where approp
         // Clear button
         elements.clearBtn?.addEventListener('click', clearPrompt);
         
+        // Improve again button
+        elements.improveBtn?.addEventListener('click', improveAgain);
+        
+        // Clear history button
+        elements.clearHistoryBtn?.addEventListener('click', clearHistory);
+        
         // Theme toggle
         elements.themeToggle?.addEventListener('click', toggleTheme);
         
@@ -829,6 +933,7 @@ Please organize your response with clear headings and bullet points where approp
         
         // Initial character count
         updateCharCounter();
+        renderHistory();
         
         // Track page view
         trackPageView();

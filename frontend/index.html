@@ -391,6 +391,15 @@
                             💡 Tip: The more specific your prompt, the better the enhanced result will be.
                         </p>
                         
+                        <!-- Recent Prompts -->
+                        <div class="history-panel" aria-live="polite">
+                            <div class="history-header">
+                                <span class="history-title">Recent Prompts</span>
+                                <button id="clear-history-btn" class="btn btn-secondary btn-sm" type="button">Clear</button>
+                            </div>
+                            <ul id="prompt-history" class="history-list"></ul>
+                        </div>
+                        
                         <!-- Advanced Options (Collapsible) -->
                         <details class="advanced-options">
                             <summary class="advanced-toggle">⚙️ Advanced Options</summary>
@@ -458,6 +467,15 @@
                                     title="Clear and start new prompt"
                                 >
                                     🗑️
+                                </button>
+                                <button 
+                                    id="improve-btn" 
+                                    class="btn btn-secondary btn-sm"
+                                    aria-label="Improve again"
+                                    title="Improve again"
+                                    disabled
+                                >
+                                    Improve again
                                 </button>
                                 <button 
                                     id="copy-btn" 

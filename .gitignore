@@ -51,6 +51,7 @@ temp/
 # AWS
 .aws/
 samconfig.toml
+lambda.zip
 
 # Secrets - NEVER commit these!
 *.pem
