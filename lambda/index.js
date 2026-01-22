@@ -1,6 +1,6 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
-const { PromptFramework } = require('./promptFramework');
+const { AdvancedPromptEngine, EntityExtractor } = require('./advancedPromptEngine');
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
@@ -95,7 +95,7 @@ function detectIntent(prompt) {
     return { type: 'general', prompt };
 }
 
-// Generate Enhanced Prompt
+// Generate Enhanced Prompt using Advanced Engine
 function generateEnhancedPrompt(originalPrompt, options = {}) {
     const corrected = fixSpelling(originalPrompt);
     const { type, length = 'balanced', tone = 'professional' } = options;
@@ -105,50 +105,39 @@ function generateEnhancedPrompt(originalPrompt, options = {}) {
     
     switch (intent.type) {
         case 'creative_writing':
-            return PromptFramework.creative_writing(intent.subject || corrected, length);
+            // Use advanced NLP-like entity extraction
+            return AdvancedPromptEngine.creative_writing(corrected, length);
             
         case 'app_development':
-            return PromptFramework.app_development(
+            return AdvancedPromptEngine.app_development(
                 intent.description || corrected,
                 intent.platform,
                 intent.features || []
             );
             
         case 'web_development':
-            return PromptFramework.web_development(
+            return AdvancedPromptEngine.web_development(
                 intent.description || corrected,
                 intent.features || []
             );
             
         case 'code_writing':
-            return PromptFramework.code_writing(intent.task, intent.language);
+            return AdvancedPromptEngine.code_writing(intent.task, intent.language);
             
         case 'debugging':
-            return PromptFramework.debugging(intent.problem);
+            return AdvancedPromptEngine.debugging(intent.problem);
             
         case 'content_writing':
-            return PromptFramework.content_writing(intent.topic || corrected, wordCount, tone);
+            return AdvancedPromptEngine.content_writing(intent.topic || corrected, wordCount, tone);
             
         case 'explanation':
-            return PromptFramework.explanation(intent.concept || corrected);
+            return AdvancedPromptEngine.explanation(intent.concept || corrected);
             
         case 'brainstorming':
-            return PromptFramework.brainstorming(intent.challenge || corrected, 15);
+            return AdvancedPromptEngine.brainstorming(intent.challenge || corrected);
             
         default:
-            // General fallback with role assignment
-            return `You are an expert assistant with deep knowledge across multiple domains.
-
-Your task: ${corrected}
-
-**Approach:**
-• Provide accurate, well-researched information
-• Use clear, structured explanations
-• Include practical examples where relevant
-• Cite sources or reasoning where appropriate
-
-**Format:**
-Organize your response with clear headings and bullet points for readability.`;
+            return AdvancedPromptEngine.general(corrected);
     }
 }
 
