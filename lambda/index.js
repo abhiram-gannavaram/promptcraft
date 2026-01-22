@@ -128,246 +128,102 @@ function extractKeyTopics(prompt) {
 
 // Prompt generation functions
 function generateAppDevelopmentPrompt(correctedPrompt, topics, tone, length) {
-    const topicsStr = topics.length > 0 ? topics.join(', ') : 'mobile app development';
+    const topicsStr = topics.length > 0 ? ` focusing on ${topics.join(', ')}` : '';
+    const detail = length === 'concise' ? 'Provide a brief technical overview.' : 
+                   length === 'detailed' ? 'Include detailed code examples and architecture decisions.' : 
+                   'Provide clear explanations with key code examples.';
     
-    return `## Mobile App Development Request
+    return `Create a mobile app development plan for: ${correctedPrompt}${topicsStr}
 
-**Project Goal:** ${correctedPrompt}
+${detail}
 
-**Key Focus Areas:** ${topicsStr}
-
----
-
-### Please provide a comprehensive development guide covering:
-
-**1. Technology Stack & Architecture**
-- Recommended frameworks (Native Android/Kotlin, React Native, Flutter, etc.)
-- Backend services needed (Firebase, AWS, custom API)
-- Database solutions (SQLite, Realm, Firebase, PostgreSQL)
-- Third-party APIs to integrate
-
-**2. Core Features & Implementation**
-- Detailed feature list with priority (MVP vs future)
-- Step-by-step implementation for each core feature
-- Data models and API endpoints needed
-- Code examples for critical components
-
-**3. UI/UX Design**
-- Screen layouts and navigation flow
-- Material Design / iOS Human Interface Guidelines
-- User experience best practices
-
-**4. Technical Requirements**
-- ${topics.includes('news aggregation/RSS feeds') ? 'News API integration (NewsAPI, RSS feeds, web scraping)' : 'API integration patterns'}
-- ${topics.includes('real-time updates') ? 'Real-time data sync (WebSockets, Firebase Realtime DB, polling)' : 'Data synchronization strategies'}
-- Offline support and caching
-- Push notifications setup
-
-**5. Development Roadmap**
-- Phase 1: MVP features and timeline
-- Phase 2: Enhanced features
-- Testing strategy
-- App store submission checklist
-
-**Please provide working code examples and explain architectural decisions.**`;
+Include:
+- Recommended tech stack (framework, backend, database)
+- Core features for MVP
+- Key implementation steps
+- Code examples for critical functionality`;
 }
 
 function generateWebDevelopmentPrompt(correctedPrompt, topics, tone, length) {
-    return `## Web Development Request
+    const detail = length === 'concise' ? 'Provide essential steps only.' : 
+                   length === 'detailed' ? 'Include complete code examples and setup instructions.' : 
+                   'Provide clear guidance with code samples.';
+    
+    return `Build a web application for: ${correctedPrompt}
 
-**Project Goal:** ${correctedPrompt}
+${detail}
 
----
-
-### Please provide a detailed development plan:
-
-**1. Technology Stack**
-- Frontend: Framework recommendation (React, Vue, Next.js, etc.)
-- Backend: Server technology if needed
-- Database and hosting solutions
-- Justification for each choice
-
-**2. Project Architecture**
-- Folder structure
-- Component hierarchy
-- State management approach
-- API design (if applicable)
-
-**3. Implementation Guide**
-- Step-by-step development process
-- Code examples for key features
-- Responsive design implementation
-- Authentication flow (if needed)
-
-**4. Best Practices**
-- SEO optimization techniques
-- Performance optimization (lazy loading, caching)
-- Security considerations
-- Accessibility (WCAG compliance)
-
-**5. Deployment**
-- Hosting recommendations
-- CI/CD setup
-- Domain and SSL configuration
-
-**Include working code examples with explanations.**`;
+Cover:
+- Tech stack recommendation (frontend/backend/database)
+- Project structure and key components
+- Implementation steps with code examples
+- Deployment approach`;
 }
 
 function generateDebuggingPrompt(correctedPrompt, tone, length) {
-    return `## Debugging Request
+    const detail = length === 'concise' ? 'Provide the fix and brief explanation.' : 
+                   length === 'detailed' ? 'Explain root cause, provide complete solution with code, and prevention tips.' : 
+                   'Explain the issue and provide working code solution.';
+    
+    return `Debug this issue: ${correctedPrompt}
 
-**Issue:** ${correctedPrompt}
+${detail}
 
----
-
-### Please help debug this by providing:
-
-**1. Root Cause Analysis**
-- Identify what's causing the issue
-- Explain why this error occurs
-- Common scenarios that trigger this
-
-**2. Solution**
-- Step-by-step fix with code
-- Before/After code comparison
-- Explanation of changes
-
-**3. Prevention**
-- How to avoid this in the future
-- Best practices to follow
-- Related issues to watch for
-
-**4. Testing**
-- How to verify the fix works
-- Test cases to add
-
-**Provide specific, working code solutions.**`;
+Include:
+- Root cause identification
+- Working code fix
+- How to prevent this error`;
 }
 
 function generateContentPrompt(correctedPrompt, tone, length) {
     const wordCount = length === 'concise' ? '500-800' : length === 'detailed' ? '1500-2000' : '800-1200';
-    const toneDesc = tone === 'casual' ? 'conversational and engaging' : 'professional and authoritative';
+    const toneStyle = tone === 'casual' ? 'conversational and engaging' : tone === 'technical' ? 'precise and technical' : 'professional';
     
-    return `## Content Writing Request
+    return `Write ${wordCount}-word ${toneStyle} content about: ${correctedPrompt}
 
-**Topic:** ${correctedPrompt}
-
----
-
-### Requirements:
-
-**Tone:** ${toneDesc}
-**Length:** ${wordCount} words
-
-**Please include:**
-
-1. **Compelling headline** - Attention-grabbing and SEO-friendly
-2. **Strong introduction** - Hook the reader immediately
-3. **Well-structured body** - Clear headings and subheadings
-4. **Practical examples** - Real-world applications
-5. **Actionable conclusion** - Clear takeaways
-6. **Meta description** - For SEO (150-160 characters)
-
-**Additional requirements:**
-- Use short paragraphs for readability
-- Include bullet points where appropriate
-- Add relevant statistics or data if applicable
-- Ensure originality and factual accuracy`;
+Include:
+- Compelling headline
+- Engaging introduction
+- Well-structured body with examples
+- Clear conclusion`;
 }
 
 function generateExplanationPrompt(correctedPrompt, tone, length) {
-    return `## Explanation Request
+    const detail = length === 'concise' ? 'Provide a clear, brief explanation.' : 
+                   length === 'detailed' ? 'Explain thoroughly with examples, analogies, and practical applications.' : 
+                   'Explain clearly with relevant examples.';
+    
+    return `Explain: ${correctedPrompt}
 
-**Topic:** ${correctedPrompt}
+${detail}
 
----
-
-### Please explain with:
-
-**1. Simple Overview (ELI5)**
-- Plain language summary
-- Real-world analogy
-
-**2. Detailed Explanation**
-- How it works step-by-step
-- Technical details where relevant
-- Diagrams or visual descriptions if helpful
-
-**3. Practical Examples**
-- Concrete use cases
-- Code examples (if technical)
-
-**4. Common Misconceptions**
-- What people often misunderstand
-- Clarifications
-
-**5. Key Takeaways**
-- Summary of main points
-- Further learning resources
-
-**Make it accessible to beginners while being comprehensive.**`;
+Include:
+- Simple overview
+- How it works
+- Practical examples
+- Key takeaways`;
 }
 
 function generateBrainstormingPrompt(correctedPrompt, tone, length) {
-    return `## Brainstorming Request
+    const count = length === 'concise' ? '5-7' : length === 'detailed' ? '15-20' : '10-12';
+    
+    return `Generate ${count} creative ideas for: ${correctedPrompt}
 
-**Challenge:** ${correctedPrompt}
+For each idea:
+- Brief description
+- Feasibility (Easy/Medium/Hard)
+- Potential impact
 
----
-
-### Please generate creative solutions:
-
-**Quick Wins (5+ ideas)**
-- Easy to implement
-- Low effort, immediate impact
-
-**Innovative Solutions (5+ ideas)**
-- Creative approaches
-- Medium effort, high potential
-
-**Moonshot Ideas (3+ ideas)**
-- Bold, ambitious concepts
-- Game-changing potential
-
-**For each idea include:**
-- Brief description (2-3 sentences)
-- Pros and cons
-- Difficulty: Easy/Medium/Hard
-- Impact: Low/Medium/High
-
-**Top Recommendation**
-- Which idea to pursue first and why
-
-**Think creatively and beyond conventional solutions.**`;
+Rank ideas by priority and explain top recommendation.`;
 }
 
 function generateGeneralPrompt(correctedPrompt, tone, length) {
-    const toneDesc = tone === 'casual' ? 'conversational and friendly' : 'professional and clear';
-    const lengthDesc = length === 'concise' ? 'Be concise, focus on key points.' : 
-                       length === 'detailed' ? 'Provide comprehensive detail.' : 
-                       'Balance depth with clarity.';
+    const style = tone === 'casual' ? 'conversational' : tone === 'technical' ? 'technical and precise' : 'professional';
+    const detail = length === 'concise' ? 'Be concise.' : length === 'detailed' ? 'Provide comprehensive detail.' : 'Balance depth with clarity.';
     
-    return `## Request
+    return `${correctedPrompt}
 
-**Task:** ${correctedPrompt}
-
----
-
-### Guidelines:
-
-1. **Be Specific** - Provide concrete, actionable information
-2. **Use Examples** - Illustrate points with real-world examples  
-3. **Structure Clearly** - Use headings and bullet points
-4. **Tone:** ${toneDesc}
-5. **Depth:** ${lengthDesc}
-
-### Expected Response Format:
-- Clear introduction stating your approach
-- Organized sections with headings
-- Practical examples where helpful
-- Summary or next steps
-
-**Please provide a thorough, well-organized response that directly addresses the request.**`;
+Use ${style} tone. ${detail} Include relevant examples.`;
 }
 
 function enhancePrompt(originalPrompt, options = {}) {
