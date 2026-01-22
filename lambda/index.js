@@ -67,40 +67,60 @@ function fixSpellingAndGrammar(text) {
 function detectRequestType(prompt) {
     const lowerPrompt = prompt.toLowerCase();
     
+    // Creative writing (stories, fiction, narratives)
+    if (lowerPrompt.match(/\b(story|stories|tale|narrative|fiction|novel|character|plot|scene)\b/) ||
+        lowerPrompt.match(/\b(write|compose|craft).*(story|tale|narrative|fiction|character)\b/)) {
+        return 'creative_writing';
+    }
+    
+    // Poetry and verse
+    if (lowerPrompt.match(/\b(poem|poetry|verse|haiku|sonnet|rhyme)\b/)) {
+        return 'poetry';
+    }
+    
+    // Development tasks
     if (lowerPrompt.includes('build') || lowerPrompt.includes('create') || lowerPrompt.includes('develop') || lowerPrompt.includes('make')) {
-        if (lowerPrompt.includes('app') || lowerPrompt.includes('application') || lowerPrompt.includes('mobile') || lowerPrompt.includes('android') || lowerPrompt.includes('ios')) {
-            return 'app_development';
-        }
-        if (lowerPrompt.includes('website') || lowerPrompt.includes('web app') || lowerPrompt.includes('webpage')) {
-            return 'web_development';
-        }
-        if (lowerPrompt.includes('api') || lowerPrompt.includes('backend') || lowerPrompt.includes('server')) {
-            return 'backend_development';
-        }
+        if (lowerPrompt.match(/\b(app|application|mobile|android|ios)\b/)) return 'app_development';
+        if (lowerPrompt.match(/\b(website|web app|webpage|frontend|ui)\b/)) return 'web_development';
+        if (lowerPrompt.match(/\b(api|backend|server|database)\b/)) return 'backend_development';
         return 'development';
     }
     
-    if (lowerPrompt.includes('write') || lowerPrompt.includes('draft') || lowerPrompt.includes('compose')) {
-        if (lowerPrompt.includes('email') || lowerPrompt.includes('mail')) return 'email_writing';
-        if (lowerPrompt.includes('blog') || lowerPrompt.includes('article') || lowerPrompt.includes('post')) return 'content_writing';
-        if (lowerPrompt.includes('code') || lowerPrompt.includes('function') || lowerPrompt.includes('script')) return 'code_writing';
-        return 'writing';
-    }
-    
-    if (lowerPrompt.includes('explain') || lowerPrompt.includes('what is') || lowerPrompt.includes('how does') || lowerPrompt.includes('tell me about')) {
-        return 'explanation';
-    }
-    
-    if (lowerPrompt.includes('fix') || lowerPrompt.includes('debug') || lowerPrompt.includes('error') || lowerPrompt.includes('issue') || lowerPrompt.includes('problem')) {
+    // Debugging
+    if (lowerPrompt.match(/\b(fix|debug|error|issue|problem|bug|crash)\b/)) {
         return 'debugging';
     }
     
-    if (lowerPrompt.includes('analyze') || lowerPrompt.includes('review') || lowerPrompt.includes('evaluate')) {
+    // Content writing (blogs, articles)
+    if (lowerPrompt.match(/\b(blog|article|post|content|essay|report)\b/) && 
+        (lowerPrompt.includes('write') || lowerPrompt.includes('create'))) {
+        return 'content_writing';
+    }
+    
+    // Email/business writing
+    if (lowerPrompt.match(/\b(email|letter|message|memo|proposal)\b/)) {
+        return 'business_writing';
+    }
+    
+    // Explanation/educational
+    if (lowerPrompt.match(/\b(explain|what is|how does|how to|teach|tutorial)\b/)) {
+        return 'explanation';
+    }
+    
+    // Analysis
+    if (lowerPrompt.match(/\b(analyze|review|evaluate|assess|critique)\b/)) {
         return 'analysis';
     }
     
-    if (lowerPrompt.includes('idea') || lowerPrompt.includes('suggest') || lowerPrompt.includes('brainstorm') || lowerPrompt.includes('recommend')) {
+    // Brainstorming
+    if (lowerPrompt.match(/\b(idea|ideas|suggest|brainstorm|recommend|options)\b/)) {
         return 'brainstorming';
+    }
+    
+    // Code writing
+    if (lowerPrompt.match(/\b(code|function|script|program|algorithm)\b/) && 
+        (lowerPrompt.includes('write') || lowerPrompt.includes('create'))) {
+        return 'code_writing';
     }
     
     return 'general';
@@ -127,6 +147,39 @@ function extractKeyTopics(prompt) {
 }
 
 // Prompt generation functions
+
+// Creative Writing (Stories, Fiction)
+function generateCreativeWritingPrompt(correctedPrompt, tone, length) {
+    const wordCount = length === 'concise' ? '800-1000' : length === 'detailed' ? '2000-3000' : '1200-1500';
+    
+    // Extract subject from prompt
+    const subject = correctedPrompt.replace(/^(write|create|compose)\s+(a\s+)?(story|tale|narrative)\s+(about\s+)?/i, '').trim();
+    
+    return `Write a compelling and richly detailed short story (${wordCount} words) about: ${subject}
+
+Your story must include:
+
+1. **Character Development:** Create vivid, multi-dimensional characters with clear motivations, internal conflicts, and distinctive voices
+
+2. **Narrative Structure:**
+   - Opening hook that immediately engages the reader
+   - Rising tension with meaningful obstacles or conflicts
+   - Climactic moment that challenges characters or reveals truth
+   - Satisfying resolution that transforms the protagonist
+
+3. **Sensory Details:** Employ rich, concrete imagery across all five senses to immerse readers in the story world
+
+4. **Thematic Depth:** Explore underlying themes related to ${subject} - consider human nature, relationships, technology, morality, or existential questions
+
+5. **Setting:** Establish a vivid, believable environment that influences the plot and character actions
+
+6. **Dialogue:** Use natural, purposeful conversations that reveal character and advance the plot
+
+7. **Unique Perspective:** Offer an original angle or unexpected insight into ${subject}
+
+Ensure the narrative maintains consistent pacing, shows rather than tells, and leaves a lasting emotional impact.`;
+}
+
 function generateAppDevelopmentPrompt(correctedPrompt, topics, tone, length) {
     const topicsStr = topics.length > 0 ? ` focusing on ${topics.join(', ')}` : '';
     const detail = length === 'concise' ? 'Provide a brief technical overview.' : 
@@ -175,17 +228,48 @@ Include:
 - How to prevent this error`;
 }
 
+// Poetry
+function generatePoetryPrompt(correctedPrompt, tone, length) {
+    const lines = length === 'concise' ? '8-12 lines' : length === 'detailed' ? '30-40 lines' : '16-24 lines';
+    const subject = correctedPrompt.replace(/^(write|create|compose)\s+(a\s+)?(poem|poetry)\s+(about\s+)?/i, '').trim();
+    
+    return `Compose an original poem (${lines}) about: ${subject}
+
+Craft your poem with:
+
+1. **Vivid Imagery:** Use concrete, sensory metaphors and similes that evoke ${subject}
+
+2. **Emotional Resonance:** Capture genuine feeling - whether melancholy, joy, wonder, or conflict
+
+3. **Sound Devices:** Employ alliteration, assonance, consonance, or internal rhyme to enhance musicality
+
+4. **Precise Diction:** Choose each word deliberately for its connotative power and rhythm
+
+5. **Original Perspective:** Offer a fresh, unexpected angle on ${subject}
+
+6. **Structural Choice:** Select a form (free verse, sonnet, haiku, etc.) that serves the subject matter
+
+Avoid clichés. Show genuine observation and emotional truth.`;
+}
+
 function generateContentPrompt(correctedPrompt, tone, length) {
     const wordCount = length === 'concise' ? '500-800' : length === 'detailed' ? '1500-2000' : '800-1200';
     const toneStyle = tone === 'casual' ? 'conversational and engaging' : tone === 'technical' ? 'precise and technical' : 'professional';
+    const subject = correctedPrompt.replace(/^(write|create)\s+(a\s+)?(blog|article|post)\s+(about\s+)?/i, '').trim();
     
-    return `Write ${wordCount}-word ${toneStyle} content about: ${correctedPrompt}
+    return `Write ${wordCount}-word ${toneStyle} article/blog post about: ${subject}
 
-Include:
-- Compelling headline
-- Engaging introduction
-- Well-structured body with examples
-- Clear conclusion`;
+Structure:
+1. **Headline:** Compelling, SEO-optimized title with power words
+2. **Hook:** Opening paragraph that immediately addresses reader pain point or curiosity
+3. **Body:** 3-5 main sections with:
+   - Clear subheadings
+   - Concrete examples and data
+   - Actionable insights
+   - Visual formatting (bullets, numbered lists)
+4. **Conclusion:** Key takeaways and clear call-to-action
+
+Include: Expert credibility markers, relevant statistics, and practical examples readers can apply immediately.`;
 }
 
 function generateExplanationPrompt(correctedPrompt, tone, length) {
@@ -217,13 +301,50 @@ For each idea:
 Rank ideas by priority and explain top recommendation.`;
 }
 
+// Business Writing
+function generateBusinessWritingPrompt(correctedPrompt, tone, length) {
+    const type = correctedPrompt.match(/\b(email|letter|proposal|memo)\b/i)?.[0]?.toLowerCase() || 'message';
+    
+    return `Compose a professional ${type} regarding: ${correctedPrompt}
+
+Essential elements:
+1. **Clear purpose statement** in opening line
+2. **Structured body** with logical flow and supporting details
+3. **Professional tone** - courteous, direct, and action-oriented
+4. **Specific ask or next steps** clearly stated
+5. **Appropriate closing** with clear timeline if needed
+
+Avoid jargon, maintain brevity, and ensure every sentence serves the core objective.`;
+}
+
+// Code Writing
+function generateCodeWritingPrompt(correctedPrompt, tone, length) {
+    const detail = length === 'detailed' ? 'Include comprehensive documentation, error handling, and test cases.' : 'Include key functionality with comments.';
+    
+    return `Write production-quality code for: ${correctedPrompt}
+
+Requirements:
+- Clean, readable implementation following language best practices
+- Proper error handling and edge case management
+- Inline comments explaining complex logic
+- Time/space complexity considerations
+- ${detail}
+
+Provide working code with explanation of key design decisions.`;
+}
+
 function generateGeneralPrompt(correctedPrompt, tone, length) {
     const style = tone === 'casual' ? 'conversational' : tone === 'technical' ? 'technical and precise' : 'professional';
-    const detail = length === 'concise' ? 'Be concise.' : length === 'detailed' ? 'Provide comprehensive detail.' : 'Balance depth with clarity.';
+    const detail = length === 'concise' ? 'Focus on key points only.' : length === 'detailed' ? 'Provide comprehensive analysis with examples.' : 'Balance depth with clarity.';
     
     return `${correctedPrompt}
 
-Use ${style} tone. ${detail} Include relevant examples.`;
+Approach:
+- Use ${style} tone
+- ${detail}
+- Support claims with specific examples
+- Structure response logically with clear sections
+- Provide actionable insights where relevant`;
 }
 
 function enhancePrompt(originalPrompt, options = {}) {
@@ -236,6 +357,12 @@ function enhancePrompt(originalPrompt, options = {}) {
     let enhanced = '';
     
     switch (requestType) {
+        case 'creative_writing':
+            enhanced = generateCreativeWritingPrompt(correctedPrompt, tone, length);
+            break;
+        case 'poetry':
+            enhanced = generatePoetryPrompt(correctedPrompt, tone, length);
+            break;
         case 'app_development':
             enhanced = generateAppDevelopmentPrompt(correctedPrompt, topics, tone, length);
             break;
@@ -246,8 +373,13 @@ function enhancePrompt(originalPrompt, options = {}) {
             enhanced = generateDebuggingPrompt(correctedPrompt, tone, length);
             break;
         case 'content_writing':
-        case 'writing':
             enhanced = generateContentPrompt(correctedPrompt, tone, length);
+            break;
+        case 'business_writing':
+            enhanced = generateBusinessWritingPrompt(correctedPrompt, tone, length);
+            break;
+        case 'code_writing':
+            enhanced = generateCodeWritingPrompt(correctedPrompt, tone, length);
             break;
         case 'explanation':
             enhanced = generateExplanationPrompt(correctedPrompt, tone, length);
