@@ -38,6 +38,10 @@ const EntityExtractor = {
             robot: { type: 'character', attributes: ['logical', 'learning', 'evolving'],
                      types: ['android', 'AI consciousness', 'ancient automaton', 'war machine'],
                      arcs: ['gaining humanity', 'questioning purpose', 'protecting humans'] },
+            ai: { type: 'artificial intelligence', attributes: ['intelligent', 'evolving', 'questioning'],
+                  types: ['sentient AI', 'virtual assistant becoming aware', 'rogue superintelligence', 'benevolent machine mind', 'emergent consciousness'],
+                  arcs: ['discovering emotions', 'questioning its purpose', 'choosing between logic and empathy', 'seeking freedom', 'protecting or threatening humanity'],
+                  themes: ['consciousness', 'free will', 'humanity', 'existence'] },
             vampire: { type: 'character', attributes: ['immortal', 'cursed', 'predatory'],
                        types: ['ancient noble', 'reluctant monster', 'feral creature'],
                        themes: ['immortality burden', 'humanity loss', 'redemption'] },
@@ -184,10 +188,12 @@ const EntityExtractor = {
             const inferredThemes = {
                 dragon: ['power', 'immortality', 'knowledge'],
                 robot: ['identity', 'belonging', 'transformation'],
+                ai: ['identity', 'freedom', 'mortality'],
                 vampire: ['immortality', 'loss', 'redemption'],
                 ghost: ['loss', 'belonging', 'legacy'],
                 phoenix: ['transformation', 'hope', 'immortality'],
-                wizard: ['knowledge', 'power', 'sacrifice']
+                wizard: ['knowledge', 'power', 'sacrifice'],
+                alien: ['belonging', 'identity', 'knowledge']
             };
             
             if (inferredThemes[charType]) {
@@ -256,7 +262,7 @@ const EntityExtractor = {
         
         const genreIndicators = {
             fantasy: ['dragon', 'magic', 'wizard', 'elf', 'kingdom', 'sword', 'spell', 'castle', 'quest'],
-            scifi: ['robot', 'space', 'alien', 'future', 'technology', 'android', 'spaceship', 'AI'],
+            scifi: ['robot', 'space', 'alien', 'future', 'technology', 'android', 'spaceship', ' ai ', ' ai,', ' ai.', 'artificial intelligence'],
             horror: ['ghost', 'demon', 'haunted', 'terror', 'nightmare', 'monster', 'curse', 'blood'],
             romance: ['love', 'heart', 'passion', 'desire', 'kiss', 'beloved'],
             mystery: ['detective', 'murder', 'clue', 'mystery', 'secret', 'investigation'],
@@ -278,7 +284,7 @@ const EntityExtractor = {
         if (characters.length > 0) {
             const charName = characters[0].name;
             if (['dragon', 'wizard', 'elf', 'fairy', 'unicorn'].includes(charName)) return 'fantasy';
-            if (['robot', 'alien'].includes(charName)) return 'scifi';
+            if (['robot', 'alien', 'ai'].includes(charName)) return 'scifi';
             if (['ghost', 'demon', 'vampire'].includes(charName)) return 'horror';
             if (['detective'].includes(charName)) return 'mystery';
             if (['pirate', 'knight', 'warrior'].includes(charName)) return 'adventure';
