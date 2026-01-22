@@ -15,16 +15,14 @@ const bedrockClient = new BedrockRuntimeClient({ region: 'us-east-1' });
 const PROMPTS_TABLE = process.env.PROMPTS_TABLE || 'promtcraft-production-prompts';
 const RATE_LIMIT_TABLE = process.env.RATE_LIMIT_TABLE || 'promtcraft-production-ratelimit';
 
-// Model selection - using available active models
+// Model selection
 const BEDROCK_MODELS = {
-    'haiku': 'us.anthropic.claude-3-haiku-20240307-v1:0',      // Active, fastest, cheapest ($0.25/M input, $1.25/M output)
-    'sonnet': 'us.anthropic.claude-3-sonnet-20240229-v1:0',    // Active, better quality ($3/M input, $15/M output)
-    'opus': 'us.anthropic.claude-3-opus-20240229-v1:0',        // Active, best quality ($15/M input, $75/M output)
-    'haiku-direct': 'anthropic.claude-3-haiku-20240307-v1:0',  // Direct model (no inference profile)
-    'haiku-35': 'anthropic.claude-3-5-haiku-20241022-v1:0'     // Claude 3.5 Haiku (if available)
+    'haiku': 'anthropic.claude-3-5-haiku-20241022-v1:0',    // Fastest, cheapest ($0.25/M input, $1.25/M output)
+    'sonnet': 'anthropic.claude-3-5-sonnet-20241022-v2:0',  // Best quality ($3/M input, $15/M output)
+    'opus': 'anthropic.claude-3-opus-20240229-v1:0'         // Most powerful ($15/M input, $75/M output)
 };
 
-const SELECTED_MODEL = BEDROCK_MODELS.haiku; // Using Claude 3 Haiku - proven to work
+const SELECTED_MODEL = BEDROCK_MODELS.haiku; // Change to 'sonnet' for better quality
 
 const headers = {
     'Content-Type': 'application/json',
@@ -102,8 +100,8 @@ Transform the user's input into ONE cohesive paragraph that will get excellent r
 function calculateCost(usage) {
     const costs = {
         'haiku': { input: 0.00000025, output: 0.00000125 },   // $0.25/$1.25 per 1M tokens
-        'sonnet': { input: 0.000003, output: 0.000015 },       // $3/$15 per 1M tokens
-        'opus': { input: 0.000015, output: 0.000075 }          // $15/$75 per 1M tokens
+        'sonnet': { input: 0.000003, output: 0.000015 },      // $3/$15 per 1M tokens
+        'opus': { input: 0.000015, output: 0.000075 }         // $15/$75 per 1M tokens
     };
     
     const modelType = SELECTED_MODEL.includes('haiku') ? 'haiku' : 
