@@ -1,0 +1,23 @@
+# Robots.txt for PromptCraft AI
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://promtcraft.in/sitemap.xml
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+Host: https://promtcraft.in

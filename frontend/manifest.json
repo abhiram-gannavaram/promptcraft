@@ -1,0 +1,71 @@
+{
+    "name": "PromptCraft AI ✨ - Free AI Prompt Generator",
+    "short_name": "PromptCraft",
+    "description": "Transform your ideas into powerful AI prompts for ChatGPT, Claude & GPT-5. Free, instant, no signup!",
+    "start_url": "/?source=pwa",
+    "display": "standalone",
+    "background_color": "#0f0f23",
+    "theme_color": "#667eea",
+    "orientation": "any",
+    "scope": "/",
+    "id": "promptcraft-ai",
+    "icons": [
+        {
+            "src": "/images/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/images/screenshot-wide.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "PromptCraft AI Desktop View"
+        },
+        {
+            "src": "/images/screenshot-mobile.png",
+            "sizes": "390x844",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "PromptCraft AI Mobile View"
+        }
+    ],
+    "categories": ["productivity", "utilities", "developer tools", "education"],
+    "lang": "en",
+    "dir": "ltr",
+    "prefer_related_applications": false,
+    "related_applications": [],
+    "shortcuts": [
+        {
+            "name": "Generate Prompt",
+            "short_name": "Generate",
+            "description": "Start generating AI prompts",
+            "url": "/?action=generate",
+            "icons": [{"src": "/images/shortcut-generate.png", "sizes": "96x96"}]
+        }
+    ],
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    }
+}
