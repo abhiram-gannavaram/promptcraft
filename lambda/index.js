@@ -37,18 +37,24 @@ const headers = {
  * Call AWS Bedrock Claude API
  */
 async function enhancePromptWithBedrock(userPrompt, options = {}) {
-    const systemPrompt = `You are an expert prompt engineer. Your job is to transform user's rough ideas into professional, effective prompts for AI models like ChatGPT, Claude, and GPT-5.
+    const tone = options.tone || 'professional';
+    const length = options.length || 'balanced';
+    
+    const systemPrompt = `You are an expert prompt engineer. Transform user's rough ideas into clear, effective prompts for AI models.
 
-CRITICAL RULES:
-1. Output ONLY a single paragraph - no bullet points, no numbered lists, no line breaks
-2. Make the prompt clear, specific, and actionable
-3. Include relevant context and constraints
-4. Use professional language
-5. Length: 100-300 words (concise but complete)
+RULES:
+1. Keep the user's original intent and meaning
+2. Make it specific and actionable
+3. Add helpful context where needed
+4. Fix grammar and spelling
+5. Match the requested tone: ${tone}
+6. Match requested length: ${length === 'concise' ? '50-100 words' : length === 'detailed' ? '200-400 words' : '100-200 words'}
+7. If user mentions images/photos, preserve that context
+8. Don't add unnecessary complexity - enhance, don't completely rewrite
 
-Transform the user's input into ONE cohesive paragraph that will get excellent results from AI models.`;
+Output the enhanced prompt directly - no explanations, no meta-text.`;
 
-    const userMessage = `Transform this rough prompt into a professional AI prompt (single paragraph only):\n\n"${userPrompt}"\n\nTarget: ${options.model || 'all AI models'}\nTone: ${options.tone || 'professional'}\nLength preference: ${options.length || 'balanced'}`;
+    const userMessage = `Enhance this prompt:\n\n"${userPrompt}"`;
 
     const requestBody = {
         anthropic_version: "bedrock-2023-05-31",
