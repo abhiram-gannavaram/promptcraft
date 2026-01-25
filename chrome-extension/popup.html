@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptCraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 400px;
+            min-height: 500px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-group label {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        select {
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+        }
+
+        .output-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .output-section.show {
+            display: block;
+        }
+
+        .enhanced-prompt {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ PromptCraft</h1>
+            <p>AI Prompt Enhancer</p>
+        </div>
+
+        <div class="input-section">
+            <label for="promptInput">Enter your rough prompt:</label>
+            <textarea id="promptInput" placeholder="e.g., write a blog post about AI"></textarea>
+            
+            <div class="options">
+                <div class="option-group">
+                    <label for="toneSelect">Tone</label>
+                    <select id="toneSelect">
+                        <option value="professional">Professional</option>
+                        <option value="casual">Casual</option>
+                        <option value="creative">Creative</option>
+                        <option value="academic">Academic</option>
+                        <option value="technical">Technical</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label for="lengthSelect">Length</label>
+                    <select id="lengthSelect">
+                        <option value="concise">Concise</option>
+                        <option value="balanced" selected>Balanced</option>
+                        <option value="detailed">Detailed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px;" class="button-group">
+                <button id="enhanceBtn" class="btn-primary">✨ Enhance Prompt</button>
+                <button id="clearBtn" class="btn-secondary">Clear</button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Enhancing your prompt...</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="output-section" id="outputSection">
+            <label>Enhanced Prompt:</label>
+            <div class="enhanced-prompt" id="enhancedPrompt"></div>
+            
+            <div class="stats" id="stats" style="display: none;">
+                <div class="stat">
+                    <div class="stat-value" id="tokensUsed">--</div>
+                    <div class="stat-label">Tokens</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="costAmount">--</div>
+                    <div class="stat-label">Cost</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="processingTime">--</div>
+                    <div class="stat-label">Time (ms)</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="copyBtn" class="btn-primary">📋 Copy</button>
+                <button id="newBtn" class="btn-secondary">New Prompt</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="https://promtcraft.in" target="_blank">Visit promtcraft.in</a>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
