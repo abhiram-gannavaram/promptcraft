@@ -21,11 +21,17 @@ const processingTime = document.getElementById('processingTime');
 
 // Check if there's selected text on the page
 chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, {action: 'getSelectedText'}, (response) => {
-        if (response && response.text) {
-            promptInput.value = response.text;
-        }
-    });
+    if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, {action: 'getSelectedText'}, (response) => {
+            if (chrome.runtime.lastError) {
+                // Ignore errors on pages where content scripts can't run
+                return;
+            }
+            if (response && response.text) {
+                promptInput.value = response.text;
+            }
+        });
+    }
 });
 
 // Load saved options
@@ -107,6 +113,9 @@ async function enhancePrompt() {
     hideError();
     
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
         const response = await fetch(API_ENDPOINT, {
             method: 'POST',
             headers: {
@@ -118,8 +127,11 @@ async function enhancePrompt() {
                     tone: toneSelect.value,
                     length: lengthSelect.value
                 }
-            })
+            }),
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
@@ -142,8 +154,12 @@ async function enhancePrompt() {
         
         hideLoading();
         showOutput();
-        
-        // Save to history
+        if (error.name === 'AbortError') {
+            showError('Req and update stats
+        saveToHistory(inputText, data.enhancedPrompt);
+        updateUsageStats(
+            showError(error.message || 'Failed to enhance prompt. Please try again.');
+        }
         saveToHistory(inputText, data.enhancedPrompt);
         
     } catch (error) {
@@ -231,14 +247,7 @@ function updateUsageStats() {
         stats.lastUsed = Date.now();
         
         chrome.storage.local.set({ usageStats: stats });
-    });
-}
-
-// Call updateUsageStats when enhancement succeeds
-const originalEnhance = enhancePrompt;
-enhancePrompt = async function() {
-    await originalEnhance.call(this);
-    if (outputSection.classList.contains('show')) {
+  if (outputSection.classList.contains('show')) {
         updateUsageStats();
     }
 };

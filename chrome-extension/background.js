@@ -9,8 +9,6 @@ chrome.runtime.onInstalled.addListener(() => {
         title: 'Enhance with PromptCraft',
         contexts: ['selection']
     });
-    
-    console.log('PromptCraft extension installed');
 });
 
 // Handle context menu clicks
@@ -43,6 +41,9 @@ async function enhanceTextInPlace(text, tabId) {
             message: 'Enhancing your prompt...'
         });
         
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
         const response = await fetch(API_ENDPOINT, {
             method: 'POST',
             headers: {
@@ -54,8 +55,11 @@ async function enhanceTextInPlace(text, tabId) {
                     tone: 'professional',
                     length: 'balanced'
                 }
-            })
+            }),
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (!response.ok) {
             throw new Error('API request failed');
@@ -97,6 +101,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function enhanceText(text) {
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
         const response = await fetch(API_ENDPOINT, {
             method: 'POST',
             headers: {
@@ -108,8 +115,11 @@ async function enhanceText(text) {
                     tone: 'professional',
                     length: 'balanced'
                 }
-            })
+            }),
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (!response.ok) {
             throw new Error('API request failed');
@@ -119,6 +129,9 @@ async function enhanceText(text) {
         return { success: true, enhanced: data.enhancedPrompt };
         
     } catch (error) {
+        if (error.name === 'AbortError') {
+            return { success: false, error: 'Request timeout' };
+        }
         return { success: false, error: error.message };
     }
 }

@@ -21,15 +21,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Copy text to clipboard
-function copyToClipboard(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch (err) {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
 }
 
 // Enhance selected text and show in modal
@@ -80,13 +85,22 @@ function showEnhancedModal(enhancedText) {
     const closeBtn = modal.querySelector('.promptcraft-close');
     const closeBtnFooter = modal.querySelector('.promptcraft-btn-close');
     const copyBtn = modal.querySelector('.promptcraft-btn-copy');
-    const textarea = modal.querySelector('textarea');
-    
-    closeBtn.addEventListener('click', () => modal.remove());
-    closeBtnFooter.addEventListener('click', () => modal.remove());
-    
-    copyBtn.addEventListener('click', () => {
-        textarea.select();
+    const textarea = modal.querySelectasync () => {
+        try {
+            await navigator.clipboard.writeText(textarea.value);
+            copyBtn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = '📋 Copy';
+            }, 2000);
+        } catch (err) {
+            // Fallback
+            textarea.select();
+            document.execCommand('copy');
+            copyBtn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = '📋 Copy';
+            }, 2000);
+        }select();
         document.execCommand('copy');
         copyBtn.textContent = '✅ Copied!';
         setTimeout(() => {

@@ -20,7 +20,8 @@
   "permissions": [
     "contextMenus",
     "activeTab",
-    "storage"
+    "storage",
+    "notifications"
   ],
   "host_permissions": [
     "https://njzzp0serg.execute-api.us-east-1.amazonaws.com/*"
