@@ -509,7 +509,6 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
             }
             
             const data = await response.json();
-            console.log('API response:', data);
             
             // Return the enhanced prompt from Lambda response
             return data.enhancedPrompt || data.enhanced_prompt || 'No response generated';
@@ -630,8 +629,6 @@ Please organize your response with clear headings and bullet points where approp
             elements.btnLoading.hidden = !isLoading;
             elements.btnLoading.style.display = isLoading ? 'inline-flex' : 'none';
         }
-        
-        console.log('Loading state:', isLoading);
     }
 
     function showOutput(text) {
@@ -937,8 +934,6 @@ Please organize your response with clear headings and bullet points where approp
         
         // Track page view
         trackPageView();
-        
-        console.log('🚀 AI Prompt Generator initialized');
     }
 
     // Initialize when DOM is ready
