@@ -16,18 +16,26 @@ Transform any text into professional AI prompts instantly with the PromptCraft C
 
 ## 📦 Installation
 
-### From Chrome Web Store (Coming Soon)
-1. Visit Chrome Web Store
-2. Search for "PromptCraft"
-3. Click "Add to Chrome"
+### 🎉 100% FREE - Direct Installation (No Chrome Web Store)
 
-### Manual Installation (For Testing)
-1. Download this `chrome-extension` folder
-2. Open Chrome and go to `chrome://extensions/`
-3. Enable "Developer mode" (toggle in top right)
-4. Click "Load unpacked"
-5. Select the `chrome-extension` folder
-6. PromptCraft is now installed!
+**Quick Install (2 minutes):**
+1. Download: https://github.com/abhiram-gannavaram/promptcraft/archive/refs/heads/main.zip
+2. Unzip the file and navigate to `chrome-extension` folder
+3. Open Chrome → `chrome://extensions/`
+4. Enable **"Developer mode"** (toggle in top right)
+5. Click **"Load unpacked"**
+6. Select the `chrome-extension` folder
+7. **Done!** PromptCraft icon appears in toolbar
+
+**Detailed Guide:** See [FREE_INSTALLATION.md](FREE_INSTALLATION.md)
+
+### Why Not Chrome Web Store?
+We're distributing directly to keep it **100% free** (no $5 store fee). You get:
+- ✅ No installation fees
+- ✅ No subscriptions
+- ✅ Faster updates
+- ✅ Open-source code
+- ✅ Pay only for API usage (~$0.0004/prompt)
 
 ## 🎯 How to Use
 
