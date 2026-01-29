@@ -320,7 +320,7 @@ graph LR
 
 - **Live Site**: https://promtcraft.in
 - **API Endpoint**: https://njzzp0serg.execute-api.us-east-1.amazonaws.com/prod/generate-prompt
-- **GitHub**: https://github.com/abhiram-gannavaram/promptcraft
+
 - **AWS Console**: us-east-1 region
 
 ## Tech Stack Summary

@@ -107,7 +107,7 @@ unzip -l promptcraft-extension.zip
 ## Step 5: Developer Account (15 min)
 
 1. Go to: https://chrome.google.com/webstore/devconsole
-2. Sign in with Google (use abhiramgannavaram@gmail.com)
+2. Sign in with Google (use your email)
 3. Pay **$5 registration fee** (one-time)
 4. Accept Developer Agreement
 5. Complete profile
@@ -203,7 +203,7 @@ https://promtcraft.in/legal/privacy-policy.html
 - **Full Guide:** CHROME_STORE_GUIDE.md
 - **Bugs Fixed:** BUG_FIXES_SUMMARY.md
 
-**Contact:** abhiramgannavaram@gmail.com
+**Contact:** your-email@example.com
 
 ---
 

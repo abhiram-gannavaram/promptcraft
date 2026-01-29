@@ -214,8 +214,7 @@ aws cloudfront create-invalidation --distribution-id E35H3XC092ZZDB --paths "/*"
 ```
 
 **Google Analytics:** https://analytics.google.com  
-**Live Site:** https://promtcraft.in  
-**GitHub:** https://github.com/abhiram-gannavaram/promptcraft
+**Live Site:** https://promtcraft.in
 
 ---
 

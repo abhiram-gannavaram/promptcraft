@@ -154,7 +154,7 @@ chrome://extensions/
 
 **URL:** https://chrome.google.com/webstore/devconsole
 **Cost:** $5 one-time fee
-**Email:** Use abhiramgannavaram@gmail.com
+**Email:** Use your email address
 
 ---
 
@@ -235,7 +235,7 @@ zip -r promptcraft-extension.zip . -x "*.md" -x ".DS_Store"
 - Review TROUBLESHOOTING section in CHROME_STORE_GUIDE.md
 
 ### Contact:
-- Email: abhiramgannavaram@gmail.com
+- Email: your-email@example.com
 - Website: https://promtcraft.in
 
 ---

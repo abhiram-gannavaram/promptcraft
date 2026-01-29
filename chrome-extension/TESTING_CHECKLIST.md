@@ -331,7 +331,7 @@ If any issues during testing:
 - Test API separately: Use curl command above
 - Review code: All files in /chrome-extension/
 
-Contact: abhiramgannavaram@gmail.com
+Contact: your-email@example.com
 
 ---
 

@@ -222,7 +222,6 @@ dig promtcraft.in
 
 ### Share Links:
 - Direct: https://promtcraft.in
-- GitHub: https://github.com/abhiram-gannavaram/promptcraft
 - Contact: https://promtcraft.in/contact.html
 
 ---

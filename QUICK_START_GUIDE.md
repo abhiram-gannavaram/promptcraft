@@ -19,7 +19,7 @@
 
 **Current access:**
 - 🌐 Website: https://promtcraft.in (if domain configured)
-- 🔗 GitHub: https://github.com/abhiram-gannavaram/promptcraft
+
 - 📧 Contact: https://promtcraft.in/contact.html
 
 **To make it available:**
@@ -272,7 +272,7 @@ aws lambda invoke \\
 ## 📞 Quick Links
 
 - 🌐 Live Site: https://promtcraft.in
-- 💻 GitHub: https://github.com/abhiram-gannavaram/promptcraft
+
 - 📧 Contact: https://promtcraft.in/contact.html
 - 📊 Roadmap: [ROADMAP.md](ROADMAP.md)
 - ✅ Checklist: [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)

@@ -184,8 +184,7 @@ No sign-up, completely free.
 
 Would you consider featuring it in [Newsletter Name]?
 
-Best,
-Abhiram
+Best regards
 ```
 
 ---

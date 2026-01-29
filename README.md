@@ -113,7 +113,3 @@ Content-Type: application/json
 ## License
 
 MIT License
-
----
-
-Made with love by Abhiram Gannavaram
