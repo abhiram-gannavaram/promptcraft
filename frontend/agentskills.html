@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Skills - PromptCraft | Specialized Prompt Templates</title>
+    <meta name="description" content="Discover specialized AI agent skills for ChatGPT, Claude, and GPT-4. Expert prompt templates for development, content creation, analysis, and more.">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .skills-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+        
+        .skills-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+        
+        .skills-hero p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .skills-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .filter-btn {
+            padding: 0.6rem 1.5rem;
+            border: 2px solid var(--color-border);
+            background: var(--color-bg);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        .skills-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .skill-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .skill-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--color-primary);
+        }
+        
+        .skill-header {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .skill-icon {
+            font-size: 2.5rem;
+            min-width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-primary-light);
+            border-radius: 12px;
+        }
+        .skill-title {
+            flex: 1;
+        }
+        .skill-title h3 {
+            margin: 0 0 0.3rem 0;
+            color: var(--color-text);
+            font-size: 1.3rem;
+        }
+        .skill-category {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .skill-description {
+            color: var(--color-text-secondary);
+            margin: 1rem 0;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .skill-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1rem 0;
+            padding: 0.8rem 0;
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+        .skill-stats span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .skill-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        .copy-btn {
+            flex: 1;
+            padding: 0.8rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .copy-btn:hover {
+            background: var(--color-primary-hover);
+            transform: scale(1.02);
+        }
+        .view-btn {
+            padding: 0.8rem 1.2rem;
+            background: transparent;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .view-btn:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow: auto;
+            padding: 2rem;
+        }
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: var(--color-bg);
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: auto;
+            padding: 2rem;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--color-bg-secondary);
+        }
+        .prompt-preview {
+            background: var(--color-bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--color-primary);
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow: auto;
+        }
+        
+        .compatibility-badges {
+            display: flex;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .compat-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-success-light);
+            color: var(--color-success);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .copy-toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--color-success);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 2000;
+        }
+        .copy-toast.show {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .skills-hero h1 { font-size: 2rem; }
+            .skills-grid { grid-template-columns: 1fr; padding: 1rem; }
+            .filters { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">✨</span>
+                <span class="logo-text">PromptCraft</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="agentskills.html" class="active">Agent Skills</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="skills-hero">
+        <h1>🤖 AI Agent Skills Library</h1>
+        <p>Transform ChatGPT, Claude, or any AI into specialized experts. Copy-paste pre-built personas for coding, writing, research, and 50+ professional tasks.</p>
+        
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search skills... (e.g., 'code review', 'SEO expert', 'data analyst')" />
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <div class="filters">
+        <button class="filter-btn active" data-category="all">All Skills</button>
+        <button class="filter-btn" data-category="development">💻 Development</button>
+        <button class="filter-btn" data-category="writing">✍️ Writing</button>
+        <button class="filter-btn" data-category="business">💼 Business</button>
+        <button class="filter-btn" data-category="design">🎨 Design</button>
+        <button class="filter-btn" data-category="data">📊 Data & Analytics</button>
+        <button class="filter-btn" data-category="marketing">📈 Marketing</button>
+        <button class="filter-btn" data-category="education">🎓 Education</button>
+        <button class="filter-btn" data-category="research">🔬 Research</button>
+    </div>
+
+    <!-- Skills Grid -->
+    <div class="skills-grid" id="skills-grid">
+        <!-- Skills will be dynamically inserted here -->
+    </div>
+
+    <!-- Modal for viewing full prompt -->
+    <div class="modal" id="skill-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close">&times;</span>
+            <div id="modal-body">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Toast -->
+    <div class="copy-toast" id="copy-toast">
+        ✅ Agent skill copied! Paste it into ChatGPT or Claude
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>PromptCraft AI</h3>
+                    <p>Empowering everyone with better AI prompts</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <a href="index.html">Prompt Generator</a>
+                    <a href="agentskills.html">Agent Skills</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <a href="legal/privacy-policy.html">Privacy Policy</a>
+                    <a href="legal/terms-of-service.html">Terms of Service</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 PromptCraft. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/agentskills.js"></script>
+</body>
+</html>
