@@ -26,11 +26,29 @@ const BEDROCK_MODELS = {
 
 const SELECTED_MODEL = BEDROCK_MODELS.haiku; // Using Claude 3 Haiku - proven to work
 
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+    'https://promtcraft.in',
+    'https://www.promtcraft.in',
+    'http://localhost:3000', // For local development
+    'http://localhost:8080'
+];
+
+// Security headers
+const SECURITY_HEADERS = {
+    'X-Frame-Options': 'DENY',
+    'X-Content-Type-Options': 'nosniff',
+    'X-XSS-Protection': '1; mode=block',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=()'
+};
+
 const headers = {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
+    'Access-Control-Allow-Headers': 'Content-Type',
+    ...SECURITY_HEADERS
 };
 
 /**
@@ -97,8 +115,14 @@ Output the enhanced prompt directly - no explanations, no meta-text.`;
             }
         };
     } catch (error) {
-        console.error('Bedrock API error:', error);
-        throw new Error('Failed to enhance prompt with AI');
+        // Log detailed error server-side only
+        console.error('Bedrock API error:', {
+            message: error.message,
+            code: error.code,
+            statusCode: error.$metadata?.httpStatusCode
+        });
+        // Return generic error to client
+        throw new Error('AI service temporarily unavailable. Please try again.');
     }
 }
 
@@ -140,6 +164,24 @@ function detectIntent(prompt) {
 }
 
 /**
+ * Validate IP address format
+ */
+function validateIP(ip) {
+    if (typeof ip !== 'string') {
+        throw new Error('Invalid IP format');
+    }
+    // IPv4 validation
+    const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    // IPv6 validation (simplified)
+    const ipv6Regex = /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/;
+    
+    if (!ipv4Regex.test(ip) && !ipv6Regex.test(ip)) {
+        throw new Error('Invalid IP address');
+    }
+    return ip;
+}
+
+/**
  * Rate limiting check
  */
 async function checkRateLimit(ip) {
@@ -148,9 +190,12 @@ async function checkRateLimit(ip) {
     const maxRequests = 10;
 
     try {
+        // Validate IP before using in database query
+        const validatedIp = validateIP(ip);
+        
         const result = await docClient.send(new GetCommand({
             TableName: RATE_LIMIT_TABLE,
-            Key: { ip }
+            Key: { ip: validatedIp }
         }));
 
         if (result.Item) {
@@ -164,12 +209,12 @@ async function checkRateLimit(ip) {
             recentRequests.push(now);
             await docClient.send(new PutCommand({
                 TableName: RATE_LIMIT_TABLE,
-                Item: { ip, requests: recentRequests, updatedAt: now }
+                Item: { ip: validatedIp, requests: recentRequests, updatedAt: now }
             }));
         } else {
             await docClient.send(new PutCommand({
                 TableName: RATE_LIMIT_TABLE,
-                Item: { ip, requests: [now], updatedAt: now }
+                Item: { ip: validatedIp, requests: [now], updatedAt: now }
             }));
         }
 
@@ -184,13 +229,26 @@ async function checkRateLimit(ip) {
  * Main Lambda handler
  */
 exports.handler = async (event) => {
-    console.log('Event:', JSON.stringify(event, null, 2));
+    // Determine CORS origin
+    const origin = event.headers?.origin || event.headers?.Origin;
+    const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+    
+    // Add CORS origin to headers
+    const responseHeaders = {
+        ...headers,
+        'Access-Control-Allow-Origin': allowedOrigin
+    };
+    
+    // Only log in development/debugging
+    if (process.env.LOG_LEVEL === 'debug') {
+        console.log('Event:', JSON.stringify(event, null, 2));
+    }
 
     // Handle OPTIONS for CORS
     if (event.httpMethod === 'OPTIONS') {
         return {
             statusCode: 200,
-            headers,
+            headers: responseHeaders,
             body: ''
         };
     }
@@ -204,7 +262,7 @@ exports.handler = async (event) => {
         if (!prompt || typeof prompt !== 'string') {
             return {
                 statusCode: 400,
-                headers,
+                headers: responseHeaders,
                 body: JSON.stringify({ 
                     error: 'Prompt is required and must be a string' 
                 })
@@ -214,7 +272,7 @@ exports.handler = async (event) => {
         if (prompt.length < 1 || prompt.length > 10000) {
             return {
                 statusCode: 400,
-                headers,
+                headers: responseHeaders,
                 body: JSON.stringify({ 
                     error: 'Prompt must be between 1 and 10,000 characters' 
                 })
@@ -226,7 +284,7 @@ exports.handler = async (event) => {
         if (!await checkRateLimit(ip)) {
             return {
                 statusCode: 429,
-                headers,
+                headers: responseHeaders,
                 body: JSON.stringify({ 
                     error: 'Rate limit exceeded. Please try again in a minute.' 
                 })
@@ -263,7 +321,7 @@ exports.handler = async (event) => {
         // Return enhanced prompt
         return {
             statusCode: 200,
-            headers,
+            headers: responseHeaders,
             body: JSON.stringify({
                 enhancedPrompt: result.enhancedPrompt,
                 metadata: {
@@ -280,14 +338,17 @@ exports.handler = async (event) => {
         };
 
     } catch (error) {
-        console.error('Error:', error);
+        // Log detailed error server-side
+        console.error('Lambda handler error:', {
+            message: error.message,
+            stack: error.stack
+        });
         
         return {
             statusCode: 500,
-            headers,
+            headers: responseHeaders,
             body: JSON.stringify({ 
-                error: 'An error occurred processing your request',
-                message: error.message
+                error: 'An error occurred processing your request. Please try again.'
             })
         };
     }

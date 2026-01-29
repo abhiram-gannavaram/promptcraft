@@ -114,6 +114,19 @@
         div.textContent = text;
         return div.innerHTML;
     }
+    
+    /**
+     * Sanitize user input
+     */
+    function sanitizeInput(input) {
+        if (typeof input !== 'string') return '';
+        
+        // Remove potentially dangerous characters
+        return input
+            .replace(/[<>]/g, '') // Remove angle brackets
+            .trim()
+            .slice(0, CONFIG.MAX_CHARACTERS);
+    }
 
     /**
      * Format number with commas
@@ -408,7 +421,9 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
         // Get input value safely
         const promptInput = elements.promptInput;
         if (!promptInput) {
-            console.error('Prompt input element not found');
+            if (CONFIG.ANALYTICS_ENABLED) {
+                console.error('Prompt input element not found');
+            }
             return;
         }
         
@@ -420,6 +435,9 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
             promptInput.focus();
             return;
         }
+        
+        // Sanitize input before processing
+        const sanitizedInput = sanitizeInput(inputText);
         
         // Rate limiting check
         if (isRateLimited()) {
@@ -443,7 +461,7 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
             
             // Track generation start
             trackEvent('prompt_generate_start', {
-                input_length: inputText.length,
+                input_length: sanitizedInput.length,
                 tone: options.tone,
                 length: options.length,
                 model: options.model
@@ -451,8 +469,8 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
             
             const startTime = performance.now();
             
-            // Make API call
-            const enhancedPrompt = await callPromptAPI(inputText, options);
+            // Make API call with sanitized input
+            const enhancedPrompt = await callPromptAPI(sanitizedInput, options);
             
             const duration = Math.round(performance.now() - startTime);
             
@@ -463,13 +481,15 @@ Return ONLY the enhanced prompt, without any explanations or meta-commentary.`;
             
             // Track success
             trackEvent('prompt_generate_success', {
-                input_length: inputText.length,
+                input_length: sanitizedInput.length,
                 output_length: enhancedPrompt.length,
                 duration_ms: duration
             });
             
         } catch (error) {
-            console.error('Generation error:', error);
+            if (CONFIG.ANALYTICS_ENABLED) {
+                console.error('Generation error:', error);
+            }
             showError(error.message || t('errorGeneric'));
             
             // Track error
@@ -603,7 +623,9 @@ Please organize your response with clear headings and bullet points where approp
         state.isGenerating = isLoading;
         
         if (!elements.generateBtn) {
-            console.warn('Generate button not found');
+            if (CONFIG.ANALYTICS_ENABLED) {
+                console.warn('Generate button not found');
+            }
             return;
         }
         
@@ -730,7 +752,9 @@ Please organize your response with clear headings and bullet points where approp
                 showToast(t('copied'));
                 trackEvent('prompt_copy', { length: state.generatedPrompt.length, method: 'fallback' });
             } catch (e) {
-                console.error('Copy failed:', e);
+                if (CONFIG.ANALYTICS_ENABLED) {
+                    console.error('Copy failed:', e);
+                }
             }
             
             document.body.removeChild(textArea);
@@ -774,7 +798,9 @@ Please organize your response with clear headings and bullet points where approp
             }
         } catch (error) {
             if (error.name !== 'AbortError') {
-                console.error('Share failed:', error);
+                if (CONFIG.ANALYTICS_ENABLED) {
+                    console.error('Share failed:', error);
+                }
             }
         }
     }
@@ -843,6 +869,33 @@ Please organize your response with clear headings and bullet points where approp
             page_location: window.location.href
         });
     }
+
+    // =========================================
+    // Error Boundary
+    // =========================================
+    
+    window.addEventListener('error', (event) => {
+        if (CONFIG.ANALYTICS_ENABLED) {
+            console.error('Uncaught error:', event.error);
+        }
+        trackEvent('app_error', {
+            message: event.error?.message || 'Unknown error',
+            filename: event.filename,
+            lineno: event.lineno
+        });
+        showError('Something went wrong. Please refresh the page.');
+        event.preventDefault();
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        if (CONFIG.ANALYTICS_ENABLED) {
+            console.error('Unhandled promise rejection:', event.reason);
+        }
+        trackEvent('app_promise_rejection', {
+            reason: event.reason?.message || 'Unknown rejection'
+        });
+        event.preventDefault();
+    });
 
     // =========================================
     // Event Listeners
